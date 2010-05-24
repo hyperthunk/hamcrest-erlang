@@ -1,0 +1,6 @@
+[{deps, [
+    {"epm/eper", []},
+    {"erlydtl", []},
+    {"rebar", []},
+    {"processone/ejabberd", [{tag, "2.1.3"}]}
+]}].

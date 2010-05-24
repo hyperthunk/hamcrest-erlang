@@ -1,0 +1,15 @@
+js libs:
+
+	http://raphaeljs.com/				-- appears to have a few bugs on safari, nice quality vg though
+	http://g.raphaeljs.com/				-- more feature complete but complex
+	http://code.google.com/p/flot/		-- nice simple API for this one
+	http://bluff.jcoglan.com/api.html  	-- looks good, will read from html tables!
+	http://www.filamentgroup.com/lab/update_to_jquery_visualize_accessible_charts_with_html5_from_designing_with/													
+										-- has the same idea as bluff but is jQuery based on accessible
+	
+	
+commet approaches:
+
+	http://code.google.com/p/erlycomet/source/checkout
+	http://www.metabrew.com/article/tag/comet
+	
