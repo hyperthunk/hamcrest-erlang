@@ -21,12 +21,7 @@
 
 all() -> ?CT_REGISTER_TESTS(?MODULE).
 
-is_not_evaluates_to_logical_negation_of_underlying_matcher(_) ->
-    P = ?FORALL(X, {any(), any()},
-            ((is_not(equal_to(X)))(X) == not((equal_to(X))(X)))),
-	true = ?EQC(P).
-
-anything_should_always_match(_) ->
+anything_always_matches(_) ->
     P = ?FORALL(X, any(),
             true == (is(anything()))(X)),
 	true = ?EQC(P).
@@ -39,6 +34,16 @@ is_matches_the_same_way_as_the_underlying_matcher(_) ->
 is_provides_convenient_shortcut_for_equal_to(_) ->
     P = ?FORALL(X, any(),
             (is(X))(X) == (equal_to(X))(X)),
+	true = ?EQC(P).
+
+is_not_evaluates_to_logical_negation_of_underlying_matcher(_) ->
+    P = ?FORALL(X, {any(), any()},
+            ((is_not(equal_to(X)))(X) == not((equal_to(X))(X)))),
+	true = ?EQC(P).
+
+is_not_provides_convenient_shortcut_for_not_equal_to(_) ->
+    P = ?FORALL({X, Y}, {any(), any()},
+            (is_not(X))(Y) == not((equal_to(X))(Y))),
 	true = ?EQC(P).
 
 reflexivity_of_equal_to(_) ->

@@ -30,9 +30,12 @@ exactly_equal_to(X) ->
               (Y) -> fun((Y) -> boolean())).
 is(Matcher) when is_function(Matcher) ->
     Matcher;
-is(Matcher) ->
-    equal_to(Matcher).
+is(Term) ->
+    equal_to(Term).
 
--spec(is_not/1 :: (Y::fun((X::term()) -> boolean())) -> fun((X::term()) -> boolean())).
+-spec(is_not/1 :: (Y::fun((X::term()) -> boolean())) -> fun((X::term()) -> boolean());
+                  (Y) -> fun((Y) -> boolean())).
 is_not(Matcher) when is_function(Matcher, 1) ->
-    fun(X) -> not(Matcher(X)) end.
+    fun(X) -> not(Matcher(X)) end;
+is_not(Term) ->
+    is_not(equal_to(Term)).
