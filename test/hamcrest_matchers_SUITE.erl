@@ -9,11 +9,26 @@
 -include_lib("triq/include/triq.hrl").
 -include("../include/test.hrl").
 
--import(hamcrest_matchers, [is/1, equal_to/1]).
+-import(hamcrest_matchers, [
+    anything/0,
+    is/1,
+    is_not/1,
+    equal_to/1,
+    exactly_equal_to/1]).
 
 -compile(export_all).
 
 all() -> ?CT_REGISTER_TESTS(?MODULE).
+
+is_not_evaluates_to_logical_negation_of_underlying_matcher(_) ->
+    P = ?FORALL(X, {any(), any()},
+            ((is_not(equal_to(X)))(X) == not((equal_to(X))(X)))),
+	true = ?EQC(P).
+
+anything_should_always_match(_) ->
+    P = ?FORALL(X, any(),
+            true == (is(anything()))(X)),
+	true = ?EQC(P).
 
 is_matches_the_same_way_as_the_underlying_matcher(_) ->
     P = ?FORALL(X, any(),
@@ -36,3 +51,9 @@ symmetry_of_equal_to(_) ->
             ?IMPLIES(X == Y,
                 (equal_to(Y))(X))),
 	true = ?EQC(P).
+
+exactly_equal_to_works_on_types_and_values(_) ->
+    true = (exactly_equal_to(atom))(atom),
+    false = (exactly_equal_to(atom))("atom"),
+    true = (exactly_equal_to(1))(1),
+    false = (exactly_equal_to(1))(1.0).
