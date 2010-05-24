@@ -9,6 +9,9 @@
 -spec(equal_to/1 :: (Y) -> fun((Y) -> boolean())).
 equal_to(Y) -> fun(X) -> X == Y end.
 
--spec(is/1 :: (Y::fun((X::term()) -> boolean())) -> fun((X::term()) -> boolean())).
+-spec(is/1 :: (Y::fun((X::term()) -> boolean())) -> fun((X::term()) -> boolean());
+              (Y) -> fun((Y) -> boolean())).
+is(Matcher) when is_function(Matcher) ->
+    Matcher;
 is(Matcher) ->
-    Matcher.
+    equal_to(Matcher).
