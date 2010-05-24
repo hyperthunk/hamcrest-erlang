@@ -9,19 +9,25 @@
 -include_lib("triq/include/triq.hrl").
 -include("../include/test.hrl").
 
--import(hamcrest_matchers, [equal_to/1]).
+-import(hamcrest_matchers, [is/1, equal_to/1]).
 
 -compile(export_all).
 
-all() ->
-    All = ?CT_REGISTER_TESTS(?MODULE),
-    ct:pal("registering ~p~n", [All]),
-    All.
+all() -> ?CT_REGISTER_TESTS(?MODULE).
+
+is_matches_the_same_way_as_the_underlying_matcher(_) ->
+    P = ?FORALL(X, any(),
+            (is(equal_to(X)))(X) == (equal_to(X))(X)),
+	true = ?EQC(P).
 
 reflexivity_of_equal_to(_) ->
-	%%X = 10,
-    %%?assertMatch(true, (equal_to(X))(X)).
     P = ?FORALL(X, any(),
             ?IMPLIES(X == X,
                 true == (equal_to(X))(X))),
-	triq:check(P).
+	true = ?EQC(P).
+
+symmetry_of_equal_to(_) ->
+    P = ?FORALL({X, Y}, {int(), int()},
+            ?IMPLIES(X == Y,
+                (equal_to(Y))(X))),
+	true = ?EQC(P).

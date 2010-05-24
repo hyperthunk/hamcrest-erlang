@@ -4,7 +4,11 @@
 -module(hamcrest_matchers).
 -author('Tim Watson <watson.timothy@gmail.com>').
 
--export([equal_to/1]).
+-export([is/1, equal_to/1]).
 
 -spec(equal_to/1 :: (Y) -> fun((Y) -> boolean())).
 equal_to(Y) -> fun(X) -> X == Y end.
+
+-spec(is/1 :: (Y::fun((X::term()) -> boolean())) -> fun((X::term()) -> boolean())).
+is(Matcher) ->
+    Matcher.
