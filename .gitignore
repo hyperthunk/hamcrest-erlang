@@ -1,0 +1,15 @@
+*.kpf
+*.pyc
+*.beam
+*.o
+*.so
+build/*
+^build$
+Emakefile
+coverage
+coverage/*
+erl_crash.dump
+priv/
+test/logs/
+ebin/*.beam
+logs/*
