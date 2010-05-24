@@ -20,6 +20,11 @@ is_matches_the_same_way_as_the_underlying_matcher(_) ->
             (is(equal_to(X)))(X) == (equal_to(X))(X)),
 	true = ?EQC(P).
 
+is_provides_convenient_shortcut_for_equal_to(_) ->
+    P = ?FORALL(X, any(),
+            (is(X))(X) == (equal_to(X))(X)),
+	true = ?EQC(P).
+
 reflexivity_of_equal_to(_) ->
     P = ?FORALL(X, any(),
             ?IMPLIES(X == X,
