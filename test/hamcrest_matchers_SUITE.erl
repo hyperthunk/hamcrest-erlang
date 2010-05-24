@@ -11,6 +11,7 @@
 
 -import(hamcrest_matchers, [
     anything/0,
+    any_of/1,
     is/1,
     is_not/1,
     equal_to/1,
@@ -57,3 +58,11 @@ exactly_equal_to_works_on_types_and_values(_) ->
     false = (exactly_equal_to(atom))("atom"),
     true = (exactly_equal_to(1))(1),
     false = (exactly_equal_to(1))(1.0).
+
+any_of_checks_the_logical_disjunction_of_a_list_of_matchers(_) ->
+    P = ?FORALL(XS, list(boolean()),
+            begin
+                M = lists:map(fun(E) -> fun(_) -> E end end, XS),
+                lists:member(true, XS) == (any_of(M))(ignored)
+            end),
+	true = ?EQC(P).

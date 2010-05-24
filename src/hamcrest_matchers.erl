@@ -4,11 +4,20 @@
 -module(hamcrest_matchers).
 -author('Tim Watson <watson.timothy@gmail.com>').
 
--export([anything/0, is/1, is_not/1, equal_to/1, exactly_equal_to/1]).
+-export([
+    anything/0,
+    any_of/1,
+    is/1,
+    is_not/1,
+    equal_to/1,
+    exactly_equal_to/1]).
 
 -spec(anything/0 :: () -> fun((term()) -> true)).
 anything() ->
     fun(_) -> true end.
+
+any_of(Matchers) when is_list(Matchers) ->
+    fun(X) -> lists:member(true, [ M(X) || M <- Matchers ]) end.
 
 -spec(equal_to/1 :: (Y) -> fun((Y) -> boolean())).
 equal_to(Y) -> fun(X) -> X == Y end.
