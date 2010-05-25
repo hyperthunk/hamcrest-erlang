@@ -10,7 +10,12 @@
     is/1,
     is_not/1,
     equal_to/1,
-    exactly_equal_to/1]).
+    exactly_equal_to/1,
+    greater_than/1,
+    greater_than_or_equal_to/1,
+    less_than/1,
+    less_than_or_equal_to/1,
+    contains_string/1]).
 
 -spec(anything/0 :: () -> fun((term()) -> true)).
 anything() ->
@@ -39,3 +44,19 @@ is_not(Matcher) when is_function(Matcher, 1) ->
     fun(X) -> not(Matcher(X)) end;
 is_not(Term) ->
     is_not(equal_to(Term)).
+
+-spec(greater_than/1 :: (number()) -> fun((number()) -> boolean())).
+greater_than(X) ->
+    fun(Y) -> Y > X end.
+
+greater_than_or_equal_to(X) ->
+    fun(Y) -> Y >= X end.
+
+less_than(X) ->
+    fun(Y) -> Y < X end.
+
+less_than_or_equal_to(X) ->
+    fun(Y) -> Y =< X end.
+
+contains_string(X) ->
+    fun(Y) -> string:str(Y, X) > 0 end.
