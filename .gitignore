@@ -13,3 +13,4 @@ priv/
 test/logs/
 ebin/*.beam
 logs/*
+include/hamcrest.hrl

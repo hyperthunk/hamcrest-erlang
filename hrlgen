@@ -1,0 +1,20 @@
+#!/usr/bin/env escript
+
+main(_) ->
+    code:add_patha("ebin"),
+    Exports = lists:filter(
+        fun({F,_}) -> F /= module_info end,
+        hamcrest_matchers:module_info(exports)),
+    Imports = [ io_lib:format("~s/~p", [F,A]) || {F, A} <- Exports ],
+    Expr = lists:flatten(
+        lists:foldl(fun(In, Acc) -> lists:concat([In, ", ", Acc]) end, "", Imports)),
+    ImportList = string:substr(Expr, 1, length(Expr) - 2),
+    erlydtl:compile("priv/build/templates/hamcrest.hrl.src", header_template),
+    {ok, Res} = header_template:render([{imports, ImportList}]),
+    Dest = filename:absname(filename:join(["include", "hamcrest.hrl"])),
+    case file:write_file(Dest, list_to_binary(Res)) of
+        ok -> io:format("Header file(s) generated.~n", []);
+        {error, WriteError} ->
+            io:format("Failed to write ~p: ~p~n", [Dest, WriteError]),
+            halt(1)
+    end.

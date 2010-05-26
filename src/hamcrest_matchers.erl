@@ -15,7 +15,8 @@
     greater_than_or_equal_to/1,
     less_than/1,
     less_than_or_equal_to/1,
-    contains_string/1]).
+    contains_string/1,
+    starts_with/1]).
 
 -spec(anything/0 :: () -> fun((term()) -> true)).
 anything() ->
@@ -49,14 +50,22 @@ is_not(Term) ->
 greater_than(X) ->
     fun(Y) -> Y > X end.
 
+-spec(greater_than_or_equal_to/1 :: (number()) -> fun((number()) -> boolean())).
 greater_than_or_equal_to(X) ->
     fun(Y) -> Y >= X end.
 
+-spec(less_than/1 :: (number()) -> fun((number()) -> boolean())).
 less_than(X) ->
     fun(Y) -> Y < X end.
 
+-spec(less_than_or_equal_to/1 :: (number()) -> fun((number()) -> boolean())).
 less_than_or_equal_to(X) ->
     fun(Y) -> Y =< X end.
 
-contains_string(X) ->
+-spec(contains_string/1 :: (string()) -> fun((string()) -> boolean())).
+contains_string([_|_]=X) ->
     fun(Y) -> string:str(Y, X) > 0 end.
+
+-spec(starts_with/1 :: (string()) -> fun((string()) -> boolean())).
+starts_with(X) ->
+    fun(Y) -> string:str(Y, X) == 1 end.
