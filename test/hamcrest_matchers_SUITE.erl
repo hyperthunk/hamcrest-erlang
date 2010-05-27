@@ -24,9 +24,6 @@
 %% -----------------------------------------------------------------------------
 %% @author Tim Watson <watson.timothy@gmail.com>
 %% @copyright 2010 Tim Watson.
-%% @doc Hamcrest Matchers
-%% @reference See <a href="http://code.google.com/p/hamcrest/">Hamcrest</a>
-%% for more information.
 %% -----------------------------------------------------------------------------
 
 %% module annotations
