@@ -3,6 +3,7 @@
 *.beam
 *.o
 *.so
+*.swp
 build/*
 ^build$
 Emakefile
