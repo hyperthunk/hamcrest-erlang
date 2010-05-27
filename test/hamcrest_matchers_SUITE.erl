@@ -123,23 +123,21 @@ starts_with_should_only_match_first_portion_of_string(_) ->
             end)),
 	?assertMatch(true, ?EQC(P)).
 
-%%ends_with_should_only_match_last_portion_of_string(_) ->
-%%    P = ?FORALL({X, Y}, {string(), int()},
-%%            ?IMPLIES(Y > 1 andalso
-%%                     length(X) > Y andalso
-%%                     string:right(X, Y) /= string:left(X, Y),
-%%            begin
-%%                LStr = string:left(X, Y),
-%%                RStr = string:right(X, Y),
-%%                case (ends_with(RStr))(X) of
-%%                    true -> true;
-%%                    false ->
-%%                        ct:pal("X = ~p~n", [X]),
-%%                        ct:pal("Y = ~p~n", [Y]),
-%%                        ct:pal("RStr = ~p~n", [RStr]),
-%%                        false
-%%                end
-%%                %%Val = (ends_with(LStr))(X),
-%%                %%not Val
-%%            end)),
-%%	?assertMatch(true, ?EQC(P)).
+ends_with_should_only_match_last_portion_of_string(_) ->
+    P = ?FORALL({X, Y}, {string(), int()},
+            ?IMPLIES(Y > 1 andalso length(X) >= Y,
+            begin
+                LStr = string:left(X, Y),
+                RStr = string:right(X, Y),
+                case (ends_with(RStr))(X) of
+                    true -> true;
+                    false ->
+                        ct:pal("X = ~p~n", [X]),
+                        ct:pal("Y = ~p~n", [Y]),
+                        ct:pal("RStr = ~p~n", [RStr]),
+                        false
+                end
+                %%Val = (ends_with(LStr))(X),
+                %%not Val
+            end)),
+	?assertMatch(true, ?EQC(P)).

@@ -16,7 +16,8 @@
     less_than/1,
     less_than_or_equal_to/1,
     contains_string/1,
-    starts_with/1]).
+    starts_with/1,
+    ends_with/1]).
 
 -spec(anything/0 :: () -> fun((term()) -> true)).
 anything() ->
@@ -69,3 +70,7 @@ contains_string([_|_]=X) ->
 -spec(starts_with/1 :: (string()) -> fun((string()) -> boolean())).
 starts_with(X) ->
     fun(Y) -> string:str(Y, X) == 1 end.
+
+-spec(ends_with/1 :: (string()) -> fun((string()) -> boolean())).
+ends_with(X) ->
+    fun(Y) -> string:equal(string:right(Y, length(X)), X) end.
