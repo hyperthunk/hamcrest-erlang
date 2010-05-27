@@ -34,4 +34,7 @@
 -export([assert_that/2]).
 
 assert_that(Value, MatchSpec) ->
-    MatchSpec(Value).
+    case MatchSpec(Value) of
+      false -> throw(assertion_failed);
+      _ -> true
+    end.
