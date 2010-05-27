@@ -1,30 +1,4 @@
-My first Hamcrest test
-------------------------
 
-We'll start be writing a very simple EUnit test, but instead of using EUnit's ?assertEqual macro, we use
-Hamcrest's assert_that construct and the standard set of matchers:
-
-    from hamcrest import *
-    import unittest
-
-    class BiscuitTest(unittest.TestCase):
-        def testEquals(self):
-            theBiscuit = Biscuit('Ginger')
-            myBiscuit = Biscuit('Ginger')
-            assert_that(theBiscuit, equal_to(myBiscuit))
-
-    if __name__ == '__main__':
-        unittest.main()
-
-The assert_that function is a stylized sentence for making a test assertion. In this example, the subject of the
-assertion is the object theBiscuit that is the first method parameter. The second method parameter is a matcher
-for Biscuit objects, here a matcher that checks one object is equal to another using the Python == operator.
-The test passes since the Biscuit class defines an eq method.
-
-If you have more than one assertion in your test you can include an identifier for the tested value in the assertion:
-
-    assert_that(theBiscuit.getChocolateChipCount(), equal_to(10), 'chocolate chips')
-    assert_that(theBiscuit.getHazelnutCount(), equal_to(3), 'hazelnuts')
 
 A tour of common matchers
 -----------------------------
