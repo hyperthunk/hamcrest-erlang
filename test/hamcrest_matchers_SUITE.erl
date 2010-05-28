@@ -154,7 +154,7 @@ ends_with_should_only_match_last_portion_of_string(_) ->
             begin
                 LStr = string:left(X, Y),
                 RStr = string:right(X, Y),
-                case (ends_with(RStr))(X) of
+                case (assert_that(X, ends_with(RStr))) of
                     true -> true;
                     false ->
                         ct:pal("X = ~p~n", [X]),
