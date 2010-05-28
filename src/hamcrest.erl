@@ -35,6 +35,6 @@
 
 assert_that(Value, MatchSpec) ->
     case MatchSpec(Value) of
-      false -> throw(assertion_failed);
+      false -> erlang:error({assertion_failed, {Value, MatchSpec}});
       _ -> true
     end.

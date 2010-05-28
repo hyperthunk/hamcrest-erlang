@@ -123,7 +123,7 @@ contains_string_should_get_proper_subset_in_all_cases(_) ->
                 SubStr = string:left(X, Y),
                 true = (contains_string(SubStr))(X)
             end)),
-	?assertMatch(true, ?EQC(P)).
+	  ?assertMatch(true, ?EQC(P)).
 
 contains_string_should_not_create_matcher_for_empty_strings(_) ->
     ?assertError(function_clause, contains_string([])).
@@ -165,4 +165,17 @@ ends_with_should_only_match_last_portion_of_string(_) ->
                 %%Val = (ends_with(LStr))(X),
                 %%not Val
             end)),
-	?assertMatch(true, ?EQC(P)).
+	  ?assertMatch(true, ?EQC(P)).
+
+%%all_zero_argument_versions_of_matchers_yield_match_descriptor(_) ->
+%%    Exports = hamcrest_matchers:module_info(exports),
+%%    MatchFs = [ F || {F,_} <-
+%%        lists:filter(fun({F,A}) -> f =/= module_info andalso A == 2 end, Exports) ],
+%%    P = ?FORALL(X, oneof(MatchFs),
+%%            begin
+%%                case X() of
+%%                    F when is_function(F, 2) -> true;
+%%                    _ -> false
+%%                  end
+%%            end),
+%%    ?assertMatch(true, ?EQC(P)).

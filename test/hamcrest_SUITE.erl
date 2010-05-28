@@ -55,8 +55,11 @@ assert_that_returns_true_from_match_success(_) ->
     ?assertMatch(true, ?EQC(P)).
 
 failing_assertions_throw_exceptions(_) ->
-    ?assertThrow(assertion_failed, 
+    MF = is(equal_to(2)),
+    ?assertError({assertion_failed, {1, MF}}, 
       assert_that(1, is(equal_to(2)))).
+
+
 
 
 
