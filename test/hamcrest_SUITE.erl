@@ -47,19 +47,23 @@ assert_that_always_passes_input_to_matcher_fun(_) ->
             F = fun(Y) -> Y == X end,
             assert_that(X, F)
         end),
-	  ?assertMatch(true, ?EQC(P)).
+	?assertMatch(true, ?EQC(P)).
 
-assert_that_returns_true_from_match_success(_) -> 
+assert_that_ignores_test_descriptions_when_matchers_pass(_) ->
+    P = ?FORALL(X, any(),
+        begin
+            F = fun(Y) -> Y == X end,
+            assert_that(X, #'hamcrest.matchspec'{ matcher=F, desc="" })
+        end),
+	?assertMatch(true, ?EQC(P)).
+
+assert_that_returns_true_from_match_success(_) ->
     P = ?FORALL(X, any(),
         assert_that(X, is(X))),
     ?assertMatch(true, ?EQC(P)).
 
 failing_assertions_throw_exceptions(_) ->
     MF = is(equal_to(2)),
-    ?assertError({assertion_failed, {1, MF}}, 
+    ?assertError({assertion_failed, "unexpected value 1"},
       assert_that(1, is(equal_to(2)))).
-
-
-
-
 
