@@ -35,8 +35,6 @@
 -include("../include/test.hrl").
 -include("../include/hamcrest.hrl").
 
--import(hamcrest, [assert_that/2]).
-
 -compile(export_all).
 
 all() -> ?CT_REGISTER_TESTS(?MODULE).
@@ -64,6 +62,5 @@ assert_that_returns_true_from_match_success(_) ->
 
 failing_assertions_throw_exceptions(_) ->
     MF = is(equal_to(2)),
-    ?assertError({assertion_failed, "unexpected value 1"},
-      assert_that(1, is(equal_to(2)))).
-
+    ?assertError({assertion_failed, "Expected a value equal to [2], but was [1]"},
+      assert_that(1, MF)).
