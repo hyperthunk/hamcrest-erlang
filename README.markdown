@@ -1,7 +1,8 @@
 Hamcrest Erlang
 =============================
 
-This is an implementation of Hamcrest for the [Erlang programming language](http://www.erlang.org/).
+This is an implementation of Hamcrest for the [Erlang programming language](http://www.erlang.org/). This
+tutorial has largely been cribbed from the hamcrest-python version, upon which the API is also based.
 
 Hamcrest is a framework for writing matcher objects allowing 'match' rules to be defined declaratively.
 There are a number of situations where matchers are invaluable, such as UI validation, or data filtering,
