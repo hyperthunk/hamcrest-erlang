@@ -38,6 +38,27 @@ assertion is the number 10 that is the first method parameter. The second method
 for numbers, here a matcher that checks one number is greater than another using the standard > operator.
 If the test passes (as it will in this case) then assert_that returns the atom 'true' by default.
 
+Standard Matchers
+------------------
+
+The standard matchers supplied with hamcrest (Erlang) are to be found in the hamcrest_matchers module. They are:
+
+* will_fail/0:  takes a zero arity fun and matches if it "fails" when executed
+* will_fail/2:  takes a zero arity fun and matches if it "fails" with the supplied class (error,exit,exception) and reason (term)
+* anything/0:   always matches - useful in writing mock expectations (with other frameworks) to assert a call was made but ignore its inputs.
+* any_of/1:     takes a list of matchers and evaluates true if at least one of them matches the supplied input
+* equal_to/1:   matches if X == Y is true
+* exactly_equal_to/1:   matches if X =:= Y is true
+* is/1:         when passed a value (term), acts exactly like equal_to; when passed a matcher, defers to it providing syntactic sugar
+* is_not/1:     inverse of is/1
+* greater_than/1: matches if X > Y is true
+* greater_than_or_equal_to/1 : matches if X >= Y is true
+* less_than/1:  matches if X < Y is true
+* less_than_or_equal_to/1: matches if X <= Y is true
+* contains_string/1: matches if string Y contains string X
+* starts_with/1: matches if string Y starts with string X
+* ends_with/1:   matches if string Y ends with string X
+
 Writing custom matchers
 ----------------------------
 
