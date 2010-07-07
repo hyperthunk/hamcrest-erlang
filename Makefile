@@ -33,7 +33,10 @@ info:
 	$(info erl program located at $(ERL))
 	$(info ERL_LIBS set to $(ERL_LIBS))
 
-compile:
+check:
+	@(env ERL_LIBS=$$ERL_LIBS ./rebar $$VERBOSE check-deps)
+
+compile: check
 	@(env ERL_LIBS=$$ERL_LIBS ./rebar $$VERBOSE compile)
 	@(escript -f hrlgen)
 

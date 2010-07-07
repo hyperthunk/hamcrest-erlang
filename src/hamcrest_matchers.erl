@@ -74,7 +74,7 @@ will_fail(Type, Reason) ->
     fun(F) ->
         try F() of
             _ -> false
-        catch Type:With -> true
+        catch Type:Reason -> true
         end
     end,
     #'hamcrest.matchspec'{
