@@ -38,7 +38,7 @@ check:
 
 compile: check
 	@(env ERL_LIBS=$$ERL_LIBS ./rebar $$VERBOSE compile)
-	@(escript -f hrlgen)
+	@(escript hrlgen)
 
 clean:
 	@(./rebar clean)

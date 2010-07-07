@@ -222,17 +222,20 @@ ends_with_should_only_match_last_portion_of_string(_) ->
                 %%Val = (ends_with(LStr))(X),
                 %%not Val
             end)),
-	  ?assertMatch(true, ?EQC(P)).
+	?assertMatch(true, ?EQC(P)).
 
-%%all_zero_argument_versions_of_matchers_yield_match_descriptor(_) ->
-%%    Exports = hamcrest_matchers:module_info(exports),
-%%    MatchFs = [ F || {F,_} <-
-%%        lists:filter(fun({F,A}) -> f =/= module_info andalso A == 2 end, Exports) ],
-%%    P = ?FORALL(X, oneof(MatchFs),
-%%            begin
-%%                case X() of
-%%                    F when is_function(F, 2) -> true;
-%%                    _ -> false
-%%                  end
-%%            end),
-%%    ?assertMatch(true, ?EQC(P)).
+match_mfa_should_defer_to_supplied_mfa(_) ->
+    P = ?FORALL(X, string(),
+            ?IMPLIES(length(X) > 0,
+            begin
+                IsMemberOf = fun(L) ->
+                    match_mfa(lists, member, [L])
+                end,
+                assert_that(hd(X), IsMemberOf(X))
+            end)),
+	?assertMatch(true, ?EQC(P)).
+
+match_mfa_should_fail_if_mf_is_invalid(_) ->
+    NoSuchMod = no_existing, NoSuchFunc = nor_i,
+    #'hamcrest.matchspec'{matcher=M} = match_mfa(NoSuchMod, NoSuchFunc, []),
+    M(any_input) == false.

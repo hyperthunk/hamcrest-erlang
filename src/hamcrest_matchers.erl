@@ -51,7 +51,8 @@
     starts_with/1,
     ends_with/1,
     will_fail/0,
-    will_fail/2]).
+    will_fail/2,
+    match_mfa/3]).
 
 -spec(will_fail/0 :: () -> fun((fun(() -> any())) -> any())).
 will_fail() ->
@@ -187,3 +188,13 @@ starts_with(X) ->
 -spec(ends_with/1 :: (string()) -> fun((string()) -> boolean())).
 ends_with(X) ->
     fun(Y) -> string:equal(string:right(Y, length(X)), X) end.
+
+match_mfa(Mod, Func, Args) ->
+    #'hamcrest.matchspec'{
+        matcher     = fun(X) -> catch(apply(Mod, Func, Args ++ [X])) == true end,
+        desc        = fun(_, Actual) ->
+                        Desc = "Expected the outcome of evaluating ~p:~p to be true, but was ~p",
+                        lists:flatten(io_lib:format(Desc, [Mod, Func, Actual]))
+                      end,
+        expected    = true
+    }.
