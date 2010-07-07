@@ -124,3 +124,14 @@ In the former case, the format string will be evaluated as `lists:flatten(io_lib
 hamcrest:message/4 function exists to provide a simple wrapper around that feature, allowing you to specify the whether the
 input is a string, an error tuple or another (arbitrary) term. It evaluates its arguments to produce a string that looks
 something like `expected a <TYPE> <DESC> <EXPECTED>, but was <ACTUAL>` when called.
+
+Another way to construct custom matchers is to use the match_mfa/3 function, which takes a module, function and its initial
+arguments and matches if adding the match input to the argument list and calling `apply(M,F,A)` evaluates to true. This takes
+away the headache of having to write the matchspec yourself, at the expense of a slightly less specific description provided
+by assert_that if the match fails. Here's an example usage taken from the tests:
+
+    some_test(_) ->
+        IsMemberOf = fun(L) ->
+            match_mfa(lists, member, [L])
+        end,
+        assert_that(hd(X), IsMemberOf(X))
