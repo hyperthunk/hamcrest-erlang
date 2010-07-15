@@ -1,5 +1,3 @@
-#!/usr/bin/env escript
-
 %% -----------------------------------------------------------------------------
 %%
 %% Hamcrest Erlang.
@@ -26,29 +24,29 @@
 %% -----------------------------------------------------------------------------
 %% @author Tim Watson <watson.timothy@gmail.com>
 %% @copyright 2010 Tim Watson.
-%%
-%% Generates hamcrest.hrl header file during build process.
 %% -----------------------------------------------------------------------------
 
-main(_) ->
-    code:add_patha("ebin"),
-	%% io:format("CODE:WHICH = ~p~n", [code:which(erlydtl)]),
-	%% erlang:display(os:getenv("ERL_LIBS")),
-    Exports = lists:filter(
-        fun({F,_}) -> F /= module_info end,
-        hamcrest_matchers:module_info(exports)),
-    Imports = [ io_lib:format("~s/~p", [F,A]) || {F, A} <- Exports ],
-    Expr = lists:flatten(
-        lists:foldl(fun(In, Acc) -> lists:concat([In, ", ", Acc]) end, "", Imports)),
-    ImportList = string:substr(Expr, 1, length(Expr) - 2),
-	{ok, PWD} = file:get_cwd(),
-	HdrTemplate = filename:join(PWD, "priv/build/templates/hamcrest.hrl.src"),
-    ok = erlydtl:compile(HdrTemplate, header_template),
-    {ok, Res} = header_template:render([{imports, ImportList}]),
-    Dest = filename:absname(filename:join(["include", "hamcrest.hrl"])),
-    case file:write_file(Dest, list_to_binary(Res)) of
-        ok -> io:format("Header file(s) generated.~n", []);
-        {error, WriteError} ->
-            io:format("Failed to write ~p: ~p~n", [Dest, WriteError]),
-            halt(1)
-    end.
+-include_lib("hamcrest/include/hamcrest_internal.hrl").
+
+-ifdef(EUNIT_HRL).
+%% TODO: ......
+-endif.
+
+-ifndef(assertThat).
+-define(assertThat(Value, MatchSpec),
+    ((fun () ->
+	    case (hamcrest:assert_that(Value, MatchSpec)) of
+		true -> ok;
+		__V -> .erlang:error({assertion_failed,
+				      [{module, ?MODULE},
+				       {line, ?LINE},
+				       {expected, true},
+				       {value, case __V of false -> __V;
+						   _ -> {not_a_boolean,__V}
+					       end}]})
+	    end
+	  end)())).
+-endif.
+
+-import(hamcrest, [assert_that/2]).
+-import(hamcrest_matchers, [{{ imports }}]).
