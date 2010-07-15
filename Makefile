@@ -33,7 +33,7 @@ ifeq ($(ERTS_VSN), 0)
     INCL_TYPES = "-b"
 endif
 INCL_TYPES ?= "NOTYPES=1"
-all: info clean test
+all: info clean compile
 
 info:
 	$(info erl program located at $(ERL))
