@@ -26,24 +26,43 @@
 ERL ?= `which erl`
 ERL_LIBS := $(shell echo "./deps:`echo $$ERL_LIBS`")
 VERBOSE ?= ""
-
+HERE := $(shell pwd)
+BUILD := $(HERE)/build
+ERTS_VSN := $(shell escript scripts/checkvsn "5.7.5")
+ifeq ($(ERTS_VSN), 0)
+    INCL_TYPES = "-b"
+endif
+INCL_TYPES ?= "NOTYPES=1"
 all: info clean test
 
 info:
 	$(info erl program located at $(ERL))
 	$(info ERL_LIBS set to $(ERL_LIBS))
 
-check:
-	@(env ERL_LIBS=$$ERL_LIBS ./rebar $$VERBOSE check-deps)
+deps: build
+	mkdir -p $@
+
+build:
+	mkdir -p $@
+
+deps/proper: deps
+	@(echo "y" | env ERL_LIBS=$(ERL_LIBS) HOME=$(BUILD) ./epm install manopapad/proper \
+                --build-command "make $(INCL_TYPES)" \
+                --config-set build_dir $(BUILD) \
+                --config-set install_dir $(HERE)/deps $$VERBOSE)
+
+check: deps/proper
+	@(env ERL_LIBS=$(ERL_LIBS) ./rebar $$VERBOSE get-deps check-deps)
 
 compile: check
-	@(env ERL_LIBS=$$ERL_LIBS ./rebar $$VERBOSE compile)
+	@(env ERL_LIBS=$(ERL_LIBS) ./rebar $$VERBOSE compile)
 
 clean:
-	@(./rebar clean)
+	@(echo "y" | env HOME=$(BUILD) ./epm remove proper $(VERBOSE))
+	@(./rebar $$VERBOSE clean delete-deps)
 
 edoc:
 	@$(ERL) -noshell -run edoc_run application '$(APP)' '"."' '[{preprocess, true},{includes, ["."]}]'
 
 test: compile
-	@(env ERL_LIBS=$$ERL_LIBS ./rebar $$VERBOSE test)
+	@(env ERL_LIBS=$(ERL_LIBS) ./rebar $$VERBOSE ct skip_deps=true)

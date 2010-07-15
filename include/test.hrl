@@ -41,10 +41,39 @@
     ct:pal("registering ~p~n", [All]),
     All).
 
+%% NB: copied verbatim from eunit.hrl because proper_common.hrl redefined the LET macro, 
+%%	   which causes rebar's ct task to puke on test code compilation. :/ 
+-define(assertException(Class, Term, Expr),
+	((fun () ->
+	    try (Expr) of
+	        __V -> .erlang:error({assertException_failed,
+				      [{module, ?MODULE},
+				       {line, ?LINE},
+				       {expression, (??Expr)},
+				       {expected,
+					"{ "++(??Class)++" , "++(??Term)
+					++" , [...] }"},
+				       {unexpected_success, __V}]})
+	    catch
+		Class:Term -> ok;
+	        __C:__T ->
+		    .erlang:error({assertException_failed,
+				   [{module, ?MODULE},
+				    {line, ?LINE},
+				    {expression, (??Expr)},
+				    {expected,
+				     "{ "++(??Class)++" , "++(??Term)
+				     ++" , [...] }"},
+				    {unexpected_exception,
+				     {__C, __T,
+				      .erlang:get_stacktrace()}}]})
+	    end
+	  end)())).
+
 -define(EQC(P),
     case code:lib_dir(eqc, include) of
         {error, bad_name} ->
-            triq:check(P);
+            proper:check(P);
         _ ->
             eqc:check(P)
     end).
