@@ -238,3 +238,12 @@ match_mfa_should_fail_if_mf_is_invalid(_) ->
     NoSuchMod = no_existing, NoSuchFunc = nor_i,
     #'hamcrest.matchspec'{matcher=M} = match_mfa(NoSuchMod, NoSuchFunc, []),
     M(any_input) == false.
+
+match_is_alive_should_identify_correct_process_status(_) ->
+	Loop = fun(L) -> L(L) end,
+	OkPid = spawn(fun() -> Loop(Loop) end),
+	Sender = self(),
+	BadPid = spawn(fun() -> ct:pal("~p dying...", [self()]), Sender ! ready, exit(normal) end),
+	receive ready -> ok end,
+	?assertThat(OkPid, isalive()),
+	?assertThat(BadPid, isdead()).

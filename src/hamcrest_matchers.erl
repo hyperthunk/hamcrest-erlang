@@ -52,7 +52,9 @@
     ends_with/1,
     will_fail/0,
     will_fail/2,
-    match_mfa/3]).
+    match_mfa/3,
+	isalive/0,
+	isdead/0]).
 
 -spec(will_fail/0 :: () -> fun((fun(() -> any())) -> any())).
 will_fail() ->
@@ -197,4 +199,16 @@ match_mfa(Mod, Func, Args) ->
                         lists:flatten(io_lib:format(Desc, [Mod, Func, Actual]))
                       end,
         expected    = true
+    }.
+
+isalive() ->
+	match_mfa(erlang, is_process_alive, []).
+
+isdead() ->
+	#'hamcrest.matchspec'{
+        matcher     = fun(X) -> Val = erlang:is_process_alive(X), ct:pal("~p is alive = ~p", [X, Val]), not(Val) end,
+        desc        = fun(_, _) ->
+                        "Expected the outcome of evaluating erlang:is_process_alive to be foobar false, but was true"
+                      end,
+        expected    = false
     }.
