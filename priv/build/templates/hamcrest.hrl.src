@@ -46,6 +46,19 @@
 					       end}]})
 	    end
 	  end)())).
+-define(assertThat(Value, MatchSpec, After),
+    ((fun () ->
+	    case (hamcrest:assert_that(Value, MatchSpec, After)) of
+		true -> ok;
+		__V -> .erlang:error({assertion_failed,
+				      [{module, ?MODULE},
+				       {line, ?LINE},
+				       {expected, true},
+				       {value, case __V of false -> __V;
+						   _ -> {not_a_boolean,__V}
+					       end}]})
+	    end
+	  end)())).
 -endif.
 
 -import(hamcrest, [assert_that/2]).

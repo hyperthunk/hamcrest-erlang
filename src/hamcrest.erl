@@ -33,9 +33,14 @@
 
 -include("hamcrest_internal.hrl").
 
--export([assert_that/2]).
+-export([assert_that/2, assert_that/3]).
 -export([message/4]).
 
+assert_that(Value, MatchSpec, RunAfter) when is_function(RunAfter, 0) ->
+  try assert_that(Value, MatchSpec)
+  after RunAfter()
+  end.
+  
 assert_that(Value, #'hamcrest.matchspec'{ matcher=MatchFunc }=MatchSpec) ->
     try assert_that(Value, MatchFunc)
     catch
