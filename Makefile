@@ -46,10 +46,11 @@ build:
 	mkdir -p $@
 
 deps/proper: deps
-	@(echo "y" | env ERL_LIBS=$(ERL_LIBS) HOME=$(BUILD) ./epm install manopapad/proper \
-                --build-command "make $(INCL_TYPES)" \
-                --config-set build_dir $(BUILD) \
-                --config-set install_dir $(HERE)/deps $$VERBOSE)
+	@(env ERL_LIBS=$(ERL_LIBS) escript scripts/checkdeps "proper" | \
+        env HOME=$(BUILD) ./epm install manopapad/proper \
+            --build-command "make $(INCL_TYPES) && rm src/proper.app.src" \
+            --config-set build_dir $(BUILD) \
+            --config-set install_dir $(HERE)/deps $$VERBOSE)
 
 check: deps/proper
 	@(env ERL_LIBS=$(ERL_LIBS) ./rebar $$VERBOSE get-deps check-deps)
@@ -58,8 +59,11 @@ compile: check
 	@(env ERL_LIBS=$(ERL_LIBS) ./rebar $$VERBOSE compile)
 
 clean:
-	@(echo "y" | env HOME=$(BUILD) ./epm remove proper $(VERBOSE))
-	@(./rebar $$VERBOSE clean delete-deps)
+	@(echo `env ERL_LIBS=$(ERL_LIBS) escript scripts/checkdeps "proper"` | \
+	        env HOME=$(BUILD) ./epm remove proper \
+	            --config-set build_dir $(BUILD) \
+	            --config-set install_dir $(HERE)/deps $$VERBOSE)
+	@(./rebar $$VERBOSE clean)
 
 edoc:
 	@$(ERL) -noshell -run edoc_run application '$(APP)' '"."' '[{preprocess, true},{includes, ["."]}]'
