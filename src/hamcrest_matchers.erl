@@ -54,7 +54,9 @@
     will_fail/2,
     match_mfa/3,
 	isalive/0,
-	isdead/0]).
+	isdead/0,
+	isempty/0,
+	check_isempty/1]).
 
 -spec(will_fail/0 :: () -> fun((fun(() -> any())) -> any())).
 will_fail() ->
@@ -212,3 +214,21 @@ isdead() ->
                       end,
         expected    = false
     }.
+
+isempty() ->
+	match_mfa(?MODULE, check_isempty, []).
+
+check_isempty([]) ->
+	true;
+check_isempty({}) ->
+	true;
+check_isempty(X) ->
+	case sets:is_set(X) of
+		true ->
+			sets:is_empty(X);
+		_ ->
+			case gb_sets:is_set(X) of
+				true -> gb_sets:is_empty(X);
+				_ -> false
+			end
+	end.

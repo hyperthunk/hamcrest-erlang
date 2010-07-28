@@ -247,3 +247,29 @@ match_is_alive_should_identify_correct_process_status(_) ->
 	receive ready -> ok end,
 	?assertThat(OkPid, isalive()),
 	?assertThat(BadPid, isdead()).
+
+is_empty_works_for_lists(_) ->
+	?assertThat([], isempty()),
+	Empty = fun hamcrest:isempty/0,
+	?assertThat([1,2,3], is_not(Empty)).
+
+is_empty_works_for_tuples(_) ->
+	?assertThat({}, isempty()),
+	Empty = fun hamcrest:isempty/0,
+	?assertThat({ok, server_id}, is_not(Empty)).
+
+is_empty_works_for_sets(_) ->
+	?assertThat(sets:new(), isempty()),
+	Empty = fun hamcrest:isempty/0,
+	?assertThat(sets:from_list([1,2,3]), is_not(Empty)).
+
+is_empty_works_for_gb_sets(_) ->
+	?assertThat(gb_sets:new(), isempty()),
+	Empty = fun hamcrest:isempty/0,
+	?assertThat(gb_sets:from_list([1,2,3]), is_not(Empty)).
+
+is_empty_pukes_for_other_inputs(_) ->
+	?assertThat(
+		fun() -> ?assertThat(10, isempty()) end, 
+		will_fail()
+	).
