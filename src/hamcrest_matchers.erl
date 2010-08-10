@@ -53,7 +53,9 @@
     will_fail/0,
     will_fail/2,
     has_length/1,
+    contains_member/1,
     match_mfa/3,
+    reverse_match_mfa/3,
     isalive/0,
     isdead/0,
     isempty/0,
@@ -206,6 +208,16 @@ match_mfa(Mod, Func, Args) ->
     expected    = true
   }.
 
+reverse_match_mfa(Mod, Func, Args) ->
+  #'hamcrest.matchspec'{
+    matcher     = fun(X) -> catch(apply(Mod, Func, [X|Args])) == true end,
+    desc        = fun(_, Actual) ->
+                    Desc = "Expected the outcome of evaluating ~p:~p to be true, but was ~p",
+                    lists:flatten(io_lib:format(Desc, [Mod, Func, Actual]))
+                  end,
+    expected    = true
+  }.
+
 isalive() ->
 	match_mfa(erlang, is_process_alive, []).
 
@@ -229,6 +241,9 @@ has_length(Size) when is_number(Size) ->
       end
     end,
     Size).
+
+contains_member(E) ->
+  reverse_match_mfa(lists, member, [E]).
 
 isempty() ->
 	match_mfa(?MODULE, check_isempty, []).

@@ -244,6 +244,15 @@ match_mfa_should_defer_to_supplied_mfa(_) ->
           end)),
 	?EQC(P).
 
+match_mfa_should_flip_its_arguments(_) ->
+  P = ?FORALL(X, string(),
+          ?IMPLIES(length(X) > 0,
+          begin
+              Head = hd(X),
+              assert_that(X, contains_member(Head))
+          end)),
+	?EQC(P).
+
 match_mfa_should_fail_if_mf_is_invalid(_) ->
     NoSuchMod = no_existing, NoSuchFunc = nor_i,
     #'hamcrest.matchspec'{matcher=M} = match_mfa(NoSuchMod, NoSuchFunc, []),
