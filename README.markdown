@@ -43,7 +43,7 @@ Standard Matchers
 
 The standard matchers supplied with hamcrest (Erlang) are to be found in the hamcrest_matchers module. They are:
 
-* match_mfa/3   takes an MFA triplet (module, function, initial args), produces a fun that matches if `apply(Mod, Func, Args ++ [Input])` evaluates true
+* match_mfa/3:  takes an MFA triplet (module, function, initial args), produces a spec that matches if `apply(Mod, Func, Args ++ [Input])` evaluates true
 * will_fail/0:  takes a zero arity fun and matches if it "fails" when executed
 * will_fail/2:  takes a zero arity fun and matches if it "fails" with the supplied class (error,exit,exception) and reason (term)
 * isalive/0:    takes Pid and matches if `is_pid(Pid) andalso erlang:is_process_alive(Pid)` evaluates true
@@ -52,6 +52,8 @@ The standard matchers supplied with hamcrest (Erlang) are to be found in the ham
 * any_of/1:     takes a list of matchers and evaluates true if at least one of them matches the supplied input
 * equal_to/1:   matches if X == Y is true
 * exactly_equal_to/1:   matches if X =:= Y is true
+* has_length/1: takes a number and produces a spec that matches a collection (list, set or gb_set) if the collection is of the specified length.
+* contains_member/1: takes a term and produces a spec that matches a collection (list, set or gb_set) if the collection contains the specified element.
 * isempty/0:    takes a list, tuple, set or gb_set and matches if it is empty
 * is/1:         when passed a value (term), acts exactly like equal_to; when passed a matcher, defers to it providing syntactic sugar
 * is_not/1:     inverse of is/1
