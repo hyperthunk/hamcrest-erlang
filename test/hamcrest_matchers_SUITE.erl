@@ -74,12 +74,15 @@ is_not_provides_convenient_shortcut_for_not_equal_to(_) ->
 reflexivity_of_equal_to(_) ->
     P = ?FORALL(X, any(),
             ?IMPLIES(X == X,
-                assert_that(X, equal_to(X)))),
+              begin
+                Y = X,
+                assert_that(X, equal_to(Y))
+              end)),
 	?EQC(P).
 
 symmetry_of_equal_to(_) ->
     P = ?FORALL({X, Y}, {int(), int()},
-            ?IMPLIES(X == Y,
+            ?IMPLIES(Y == X,
                 assert_that(X, equal_to(Y)))),
 	?EQC(P).
 
@@ -223,15 +226,22 @@ ends_with_should_only_match_last_portion_of_string(_) ->
             end)),
 	?EQC(P).
 
+has_length_should_match_length(_) ->
+  P = ?FORALL(XS, list(),
+      begin
+          assert_that(XS, has_length(length(XS)))
+      end),
+	?EQC(P).
+
 match_mfa_should_defer_to_supplied_mfa(_) ->
-    P = ?FORALL(X, string(),
-            ?IMPLIES(length(X) > 0,
-            begin
-                IsMemberOf = fun(L) ->
-                    match_mfa(lists, member, [L])
-                end,
-                assert_that(hd(X), IsMemberOf(X))
-            end)),
+  P = ?FORALL(X, string(),
+          ?IMPLIES(length(X) > 0,
+          begin
+              IsMemberOf = fun(L) ->
+                  match_mfa(lists, member, [L])
+              end,
+              assert_that(hd(X), IsMemberOf(X))
+          end)),
 	?EQC(P).
 
 match_mfa_should_fail_if_mf_is_invalid(_) ->

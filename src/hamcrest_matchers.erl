@@ -52,6 +52,7 @@
     ends_with/1,
     will_fail/0,
     will_fail/2,
+    has_length/1,
     match_mfa/3,
     isalive/0,
     isdead/0,
@@ -216,6 +217,18 @@ isdead() ->
                   end,
     expected    = false
   }.
+
+-spec(has_length/1 :: (number()) -> #'hamcrest.matchspec'{}).
+has_length(Size) when is_number(Size) ->
+  ?MATCHER(fun(XS) -> length(XS) == Size end,
+    fun(_, Actual) ->
+      Desc = "Expected a list of length ~p, but was ~p",
+      case is_list(Actual) of
+        true -> lists:flatten(io_lib:format(Desc, [Size, length(Actual)]));
+        false -> lists:flatten(io_lib:format(Desc, [Size, Actual]))
+      end
+    end,
+    Size).
 
 isempty() ->
 	match_mfa(?MODULE, check_isempty, []).
