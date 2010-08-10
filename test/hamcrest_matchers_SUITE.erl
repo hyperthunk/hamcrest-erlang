@@ -239,6 +239,11 @@ match_mfa_should_fail_if_mf_is_invalid(_) ->
     #'hamcrest.matchspec'{matcher=M} = match_mfa(NoSuchMod, NoSuchFunc, []),
     M(any_input) == false.
 
+match_mfa_should_fail_if_func_is_invalid(_) ->
+    NoSuchFunc = this_function_doesnt_exist,
+    #'hamcrest.matchspec'{matcher=M} = match_mfa(lists, NoSuchFunc, []),
+    M(any_input) == false.
+
 match_is_alive_should_identify_correct_process_status(_) ->
 	Loop = fun(L) -> L(L) end,
 	OkPid = spawn(fun() -> Loop(Loop) end),
@@ -270,6 +275,6 @@ is_empty_works_for_gb_sets(_) ->
 
 is_empty_pukes_for_other_inputs(_) ->
 	?assertThat(
-		fun() -> ?assertThat(10, isempty()) end, 
+		fun() -> ?assertThat(10, isempty()) end,
 		will_fail()
 	).

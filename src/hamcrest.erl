@@ -33,7 +33,7 @@
 
 -include("hamcrest_internal.hrl").
 
--export([assert_that/2, assert_that/3]).
+-export([match/2, match/3, assert_that/2, assert_that/3]).
 -export([message/4
         ,describe/2
         ,describe_spec/2
@@ -41,7 +41,14 @@
         ,default_heckle/1
         ,default_heckle/2]).
 
+match(Value, MatchSpec) ->
+  match(Value, MatchSpec, fun() -> ok end).
+
+match(Value, MatchSpec, RunAfter) ->
+  catch( assert_that(Value, MatchSpec, RunAfter) ) == true.
+
 assert_that(Value, MatchSpec, RunAfter) when is_function(RunAfter, 0) ->
+  %% TODO: verify that this doesn't break the semantics of assert_that *and* match!! :/
   try assert_that(Value, MatchSpec)
   after RunAfter()
   end.
@@ -61,7 +68,8 @@ assert_that(Value, MatchSpec) when is_function(MatchSpec, 1) ->
   case MatchSpec(Value) of
     false ->
       case is_function(Value, 0) of
-        true  -> erlang:error({assertion_failed, expected_exit});
+        %% TODO: ticket #
+        true  -> erlang:error({assertion_failed, expected_exit});   %% this actually seems bonkers, why so restrictive!?
         false -> erlang:error({assertion_failed, default_describe(Value)})
       end;
     _ -> true

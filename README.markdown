@@ -43,12 +43,16 @@ Standard Matchers
 
 The standard matchers supplied with hamcrest (Erlang) are to be found in the hamcrest_matchers module. They are:
 
+* match_mfa/3   takes an MFA triplet (module, function, initial args), produces a fun that matches if `apply(Mod, Func, Args ++ [Input])` evaluates true
 * will_fail/0:  takes a zero arity fun and matches if it "fails" when executed
 * will_fail/2:  takes a zero arity fun and matches if it "fails" with the supplied class (error,exit,exception) and reason (term)
+* isalive/0:    takes Pid and matches if `is_pid(Pid) andalso erlang:is_process_alive(Pid)` evaluates true
+* isdead/0:     takes Pid and matches if `is_pid(Pid) andalso erlang:is_process_alive(Pid)` evaluates false
 * anything/0:   always matches - useful in writing mock expectations (with other frameworks) to assert a call was made but ignore its inputs.
 * any_of/1:     takes a list of matchers and evaluates true if at least one of them matches the supplied input
 * equal_to/1:   matches if X == Y is true
 * exactly_equal_to/1:   matches if X =:= Y is true
+* isempty/0:    takes a list, tuple, set or gb_set and matches if it is empty
 * is/1:         when passed a value (term), acts exactly like equal_to; when passed a matcher, defers to it providing syntactic sugar
 * is_not/1:     inverse of is/1
 * greater_than/1: matches if X > Y is true
@@ -58,6 +62,18 @@ The standard matchers supplied with hamcrest (Erlang) are to be found in the ham
 * contains_string/1: matches if string Y contains string X
 * starts_with/1: matches if string Y starts with string X
 * ends_with/1:   matches if string Y ends with string X
+
+The match_mfa/3 function is a building block for creating custom matchers without having to dig around in the API too deeply.
+
+Using hamcrest assertions
+----------------------------
+
+The `assert_that/2` and `assert_that/3` functions are the workhorses of the library. Each function takes an *actual* value and a
+match specification (more on this later) and apply the match function to the *actual* input value. If the match function evaluates
+to `false`, the descriptor on the match specification is used to construct and error message and an exception is thrown.
+
+The two and three argument `?assertThat` macros work in exactly the same way, except they borrow their error reporting mechanism
+from eunit and provide information about the line number and expectation failure.
 
 Writing custom matchers
 ----------------------------
