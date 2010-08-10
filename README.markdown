@@ -141,10 +141,25 @@ hamcrest:message/4 function exists to provide a simple wrapper around that featu
 input is a string, an error tuple or another (arbitrary) term. It evaluates its arguments to produce a string that looks
 something like `expected a <TYPE> <DESC> <EXPECTED>, but was <ACTUAL>` when called.
 
+If you find the record syntax a little too verbose for your liking, there is a macro defined which cuts down on the noise somewhat:
+
+    will_fail() ->
+      Matcher =
+      fun(F) ->
+        try F() of
+            _ -> false
+        catch _:_ -> true
+        end
+      end,
+      ?MATCHER(Matcher, expected_fail, {oneof, {exit,error,exception}}).
+
 Another way to construct custom matchers is to use the match_mfa/3 function, which takes a module, function and its initial
 arguments and matches if adding the match input to the argument list and calling `apply(M,F,A)` evaluates to true. This takes
 away the headache of having to write the matchspec yourself, at the expense of a slightly less specific description provided
-by assert_that if the match fails. Here's an example usage taken from the tests:
+by assert_that if the match fails. Here's an example usage taken from the tests and another taken from the core API itself:
+
+    isalive() ->
+      match_mfa(erlang, is_process_alive, []).
 
     some_test(_) ->
         IsMemberOf = fun(L) ->
