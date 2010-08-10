@@ -113,158 +113,158 @@ will_fail_asserts_failure_against_given_condition(_) ->
 
 %% TODO: check will_fail during 'failure' conditions
 will_fail_should_fail_if_the_operation_succeeds(_) ->
-    P = ?FORALL(X, any(),
-            begin
-                F = fun() -> X end,
-                ok ==
-                ?assertException(error, {assertion_failed, "expected exit with error:{nomatch,unexpected_value}, but operation succeeded"},
-                    assert_that(F, will_fail(error, {nomatch, unexpected_value})))
-            end),
-    ?EQC(P).
+  P = ?FORALL(X, any(),
+      begin
+        F = fun() -> X end,
+        ok ==
+        ?assertException(error, {assertion_failed, "expected exit with error:{nomatch,unexpected_value}, but operation succeeded"},
+            assert_that(F, will_fail(error, {nomatch, unexpected_value})))
+      end),
+  ?EQC(P).
 
 greater_than_should_behave_like_built_in_operator(_) ->
-    P = ?FORALL({X, Y}, {oneof([int(), real()]), oneof([int(), real()])},
-            ?IMPLIES(Y > X,
-            assert_that(Y, greater_than(X)))),
+  P = ?FORALL({X, Y}, {oneof([int(), real()]), oneof([int(), real()])},
+        ?IMPLIES(Y > X,
+        assert_that(Y, greater_than(X)))),
 	?EQC(P).
 
 greater_than_should_fail_with_error_unlike_built_in_operator(_) ->
-    P = ?FORALL({X, Y}, {oneof([int(), real()]), oneof([int(), real()])},
-            ?IMPLIES(Y < X,
-            begin
-                Msg = hamcrest:message(value, "greater than", X, Y),
-                try (assert_that(Y, greater_than(X))) of
-                    Term ->
-                        ct:pal("Term = ~p", [Term]),
-                        false
-                catch error:Reason ->
-                    {assertion_failed, Msg} == Reason
-                end
-            end)),
+  P = ?FORALL({X, Y}, {oneof([int(), real()]), oneof([int(), real()])},
+      ?IMPLIES(Y < X,
+      begin
+        Msg = hamcrest:message(value, "greater than", X, Y),
+        try (assert_that(Y, greater_than(X))) of
+          Term ->
+            ct:pal("Term = ~p", [Term]),
+            false
+        catch error:Reason ->
+          {assertion_failed, Msg} == Reason
+        end
+      end)),
 	?EQC(P).
 
 greater_than_or_equal_to_should_behave_like_built_in_operator(_) ->
-    P = ?FORALL({X, Y},
-            {oneof([int(), real()]), oneof([int(), real()])},
-                begin
-                    #'hamcrest.matchspec'{matcher=M} = greater_than_or_equal_to(X),
-                    (Y >= X) == M(Y)
-                end),
+  P = ?FORALL({X, Y},
+      {oneof([int(), real()]), oneof([int(), real()])},
+        begin
+          #'hamcrest.matchspec'{matcher=M} = greater_than_or_equal_to(X),
+          (Y >= X) == M(Y)
+        end),
 	?EQC(P).
 
 less_than_should_behave_like_built_in_operator(_) ->
-    P = ?FORALL({X, Y},
-            {oneof([int(), real()]), oneof([int(), real()])},
-            begin
-                #'hamcrest.matchspec'{matcher=M} = less_than(X),
-                (Y < X) == M(Y)
-            end),
+  P = ?FORALL({X, Y},
+        {oneof([int(), real()]), oneof([int(), real()])},
+        begin
+          #'hamcrest.matchspec'{matcher=M} = less_than(X),
+          (Y < X) == M(Y)
+        end),
 	?EQC(P).
 
 less_than_or_equal_to_should_behave_like_built_in_operator(_) ->
-    P = ?FORALL({X, Y},
-            {oneof([int(), real()]), oneof([int(), real()])},
-            begin
-                #'hamcrest.matchspec'{matcher=M} = less_than_or_equal_to(X),
-                (Y =< X) == M(Y)
-            end),
+  P = ?FORALL({X, Y},
+        {oneof([int(), real()]), oneof([int(), real()])},
+        begin
+          #'hamcrest.matchspec'{matcher=M} = less_than_or_equal_to(X),
+          (Y =< X) == M(Y)
+        end),
 	?EQC(P).
 
 contains_string_should_get_proper_subset_in_all_cases(_) ->
-    P = ?FORALL({X, Y}, {string(), int()},
-            ?IMPLIES(length(X) > 0 andalso
-                     length(X) >= Y andalso
-                     Y > 0,
-            begin
-                SubStr = string:left(X, Y),
-                true = assert_that(X, contains_string(SubStr))
-            end)),
-	  ?EQC(P).
+  P = ?FORALL({X, Y}, {string(), int()},
+        ?IMPLIES(length(X) > 0 andalso
+                 length(X) >= Y andalso
+                 Y > 0,
+        begin
+          SubStr = string:left(X, Y),
+          true = assert_that(X, contains_string(SubStr))
+        end)),
+  ?EQC(P).
 
 contains_string_should_not_create_matcher_for_empty_strings(_) ->
-    ?assertException(error, function_clause, contains_string([])).
+  ?assertException(error, function_clause, contains_string([])).
 
 contains_string_should_not_match_empty_string(_) ->
-    P = ?FORALL(X, string(),
-            ?IMPLIES(length(X) > 0,
-                assert_that(fun() ->
-                                assert_that(X, contains_string("foo bar baz"))
-                            end, will_fail())
-            )),
-    ?EQC(P).
+  P = ?FORALL(X, string(),
+        ?IMPLIES(length(X) > 0,
+            assert_that(fun() ->
+                            assert_that(X, contains_string("foo bar baz"))
+                        end, will_fail())
+        )),
+  ?EQC(P).
 
 starts_with_should_only_match_first_portion_of_string(_) ->
-    P = ?FORALL({X, Y}, {string(), int()},
-            ?IMPLIES(Y > 1 andalso
-                     length(X) > Y andalso
-                     string:left(X, Y) /= string:right(X, Y),
-            begin
-                LStr = string:left(X, Y),
-                RStr = string:right(X, Y),
-                true = assert_that(X, starts_with(LStr)),
-                Val = (starts_with(RStr))(X),
-                not Val
-            end)),
+  P = ?FORALL({X, Y}, {string(), int()},
+        ?IMPLIES(Y > 1 andalso
+                 length(X) > Y andalso
+                 string:left(X, Y) /= string:right(X, Y),
+        begin
+          LStr = string:left(X, Y),
+          RStr = string:right(X, Y),
+          true = assert_that(X, starts_with(LStr)),
+          Val = (starts_with(RStr))(X),
+          not Val
+        end)),
 	?EQC(P).
 
 ends_with_should_only_match_last_portion_of_string(_) ->
-    P = ?FORALL({X, Y}, {string(), int()},
-            ?IMPLIES(Y > 1 andalso length(X) >= Y,
-            begin
-                LStr = string:left(X, Y),
-                RStr = string:right(X, Y),
-                case (assert_that(X, ends_with(RStr))) of
-                    true -> true;
-                    false ->
-                        ct:pal("X = ~p~n", [X]),
-                        ct:pal("Y = ~p~n", [Y]),
-                        ct:pal("RStr = ~p~n", [RStr]),
-                        false
-                end
-                %%Val = (ends_with(LStr))(X),
-                %%not Val
-            end)),
+  P = ?FORALL({X, Y}, {string(), int()},
+        ?IMPLIES(Y > 1 andalso length(X) >= Y,
+        begin
+          LStr = string:left(X, Y),
+          RStr = string:right(X, Y),
+          case (assert_that(X, ends_with(RStr))) of
+            true -> true;
+            false ->
+                ct:pal("X = ~p~n", [X]),
+                ct:pal("Y = ~p~n", [Y]),
+                ct:pal("RStr = ~p~n", [RStr]),
+                false
+          end
+          %%Val = (ends_with(LStr))(X),
+          %%not Val
+        end)),
 	?EQC(P).
 
 has_length_should_match_length(_) ->
   P = ?FORALL(XS, list(),
       begin
-          assert_that(XS, has_length(length(XS)))
+        assert_that(XS, has_length(length(XS)))
       end),
 	?EQC(P).
 
 match_mfa_should_defer_to_supplied_mfa(_) ->
   P = ?FORALL(X, string(),
-          ?IMPLIES(length(X) > 0,
-          begin
-              IsMemberOf = fun(L) ->
-                  match_mfa(lists, member, [L])
-              end,
-              assert_that(hd(X), IsMemberOf(X))
-          end)),
+        ?IMPLIES(length(X) > 0,
+        begin
+          IsMemberOf = fun(L) ->
+            match_mfa(lists, member, [L])
+          end,
+          assert_that(hd(X), IsMemberOf(X))
+        end)),
 	?EQC(P).
 
 reverse_match_mfa_should_flip_its_arguments(_) ->
   P = ?FORALL(X, string(),
-          ?IMPLIES(length(X) > 0,
-          begin
-              Head = hd(X),
-              assert_that(X, contains_member(Head)),
-              assert_that(sets:from_list(X), contains_member(Head)),
-              assert_that(gb_sets:from_list(X), contains_member(Head)),
-              assert_that(ordsets:from_list(X), contains_member(Head))
-          end)),
+        ?IMPLIES(length(X) > 0,
+        begin
+            Head = hd(X),
+            assert_that(X, contains_member(Head)),
+            assert_that(sets:from_list(X), contains_member(Head)),
+            assert_that(gb_sets:from_list(X), contains_member(Head)),
+            assert_that(ordsets:from_list(X), contains_member(Head))
+        end)),
 	?EQC(P).
 
 match_mfa_should_fail_if_mf_is_invalid(_) ->
-    NoSuchMod = no_existing, NoSuchFunc = nor_i,
-    #'hamcrest.matchspec'{matcher=M} = match_mfa(NoSuchMod, NoSuchFunc, []),
-    M(any_input) == false.
+  NoSuchMod = no_existing, NoSuchFunc = nor_i,
+  #'hamcrest.matchspec'{matcher=M} = match_mfa(NoSuchMod, NoSuchFunc, []),
+  M(any_input) == false.
 
 match_mfa_should_fail_if_func_is_invalid(_) ->
-    NoSuchFunc = this_function_doesnt_exist,
-    #'hamcrest.matchspec'{matcher=M} = match_mfa(lists, NoSuchFunc, []),
-    M(any_input) == false.
+  NoSuchFunc = this_function_doesnt_exist,
+  #'hamcrest.matchspec'{matcher=M} = match_mfa(lists, NoSuchFunc, []),
+  M(any_input) == false.
 
 match_is_alive_should_identify_correct_process_status(_) ->
 	Loop = fun(L) -> L(L) end,

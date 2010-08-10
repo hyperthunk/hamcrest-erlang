@@ -61,6 +61,8 @@ assert_that(Value, #'hamcrest.matchspec'{ matcher=MatchFunc }=MatchSpec) ->
       erlang:error({assertion_failed, describe_error(MatchSpec, {success, Value})});
     error:{assertion_failed, _} ->
       erlang:error({assertion_failed, describe(MatchSpec, Value)});
+    error:{assertion_override, Err} ->
+      erlang:error({assertion_failed, Err});
     Class:Reason ->
       erlang:error({assertion_failed, describe_error(MatchSpec, {Class, Reason})})
   end;
@@ -119,7 +121,11 @@ describe(Desc, Expected, Actual) when is_function(Desc, 2) ->
 describe(Desc, _, Actual) when is_function(Desc, 1) ->
   Desc(Actual);
 describe(Desc, Expected, Actual) when is_list(Desc) ->
-  lists:flatten(io_lib:format(Desc, [Expected, Actual])).
+  lists:flatten(io_lib:format(Desc, [Expected, Actual]));
+describe({oneof,{exit,error,exception}}, expected_fail, _) ->
+  "Expected failure, but operation succeeded!";
+describe(expected_fail, {Class, Reason}, _) ->
+  describe("Expected ~p due to ~p, but operation succeeded!", Class, Reason).
 
 describe_spec(Actual, [#'hamcrest.matchspec'{}|Rest]=Matchers) ->
   string:join([describe(hd(Matchers), Actual)|describe_spec(Actual, Rest)], "\n");
