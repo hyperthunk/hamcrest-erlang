@@ -59,7 +59,8 @@
     isalive/0,
     isdead/0,
     isempty/0,
-    check_isempty/1]).
+    check_isempty/1,
+    check_member/2]).
 
 -spec(will_fail/0 :: () -> fun((fun(() -> any())) -> any())).
 will_fail() ->
@@ -243,7 +244,30 @@ has_length(Size) when is_number(Size) ->
     Size).
 
 contains_member(E) ->
-  reverse_match_mfa(lists, member, [E]).
+  reverse_match_mfa(?MODULE, check_member, [E]).
+
+check_member(Container, E) when is_list(Container) ->
+  lists:member(E, Container);
+check_member(Container, E) ->
+  ct:pal("checking for ~p in ~p, where~n", [E, Container]),
+  case sets:is_set(Container) of
+    true ->
+      sets:is_element(E, Container);
+    false ->
+      case gb_sets:is_set(Container) of
+        true -> gb_sets:is_element(E, Container);
+        false ->
+          case ordsets:is_set(Container) of
+            true ->
+              ordsets:is_element(E, Container);
+            false ->
+              case is_tuple(Container) of
+                true -> check_member(tuple_to_list(Container), E);
+                false -> false
+              end
+          end
+      end
+  end.
 
 isempty() ->
 	match_mfa(?MODULE, check_isempty, []).
@@ -259,6 +283,10 @@ check_isempty(X) ->
 		_ ->
 			case gb_sets:is_set(X) of
 				true -> gb_sets:is_empty(X);
-				_ -> false
+				_ ->
+          case ordsets:is_set(X) of
+            true -> ordsets:size(X) == 0;
+            false -> false
+          end
 			end
 	end.

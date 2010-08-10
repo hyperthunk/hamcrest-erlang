@@ -244,12 +244,15 @@ match_mfa_should_defer_to_supplied_mfa(_) ->
           end)),
 	?EQC(P).
 
-match_mfa_should_flip_its_arguments(_) ->
+reverse_match_mfa_should_flip_its_arguments(_) ->
   P = ?FORALL(X, string(),
           ?IMPLIES(length(X) > 0,
           begin
               Head = hd(X),
-              assert_that(X, contains_member(Head))
+              assert_that(X, contains_member(Head)),
+              assert_that(sets:from_list(X), contains_member(Head)),
+              assert_that(gb_sets:from_list(X), contains_member(Head)),
+              assert_that(ordsets:from_list(X), contains_member(Head))
           end)),
 	?EQC(P).
 
