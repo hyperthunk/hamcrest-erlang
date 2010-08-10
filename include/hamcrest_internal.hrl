@@ -38,3 +38,8 @@
     expected=Expected,
     desc=Desc
   }).
+
+-define(HECKLE(M,F,A),
+  .application:set_env(hamcrest, heckle, [M, F, A])).
+
+-define(NOHECKLE, application:unset_env(hamcrest, heckle)).

@@ -67,11 +67,7 @@ will_fail() ->
     catch _:_ -> true
     end
   end,
-  #'hamcrest.matchspec'{
-    matcher     = Matcher,
-    desc        = expected_fail,
-    expected    = {oneof, {exit,error,exception}}
-  }.
+  ?MATCHER(Matcher, expected_fail, {oneof, {exit,error,exception}}).
 
 -spec(will_fail/2 :: (atom(), term()) -> #'hamcrest.matchspec'{}).
 will_fail(Type, Reason) ->
