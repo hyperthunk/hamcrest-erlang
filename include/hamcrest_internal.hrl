@@ -29,5 +29,12 @@
 -record('hamcrest.matchspec', {
     matcher     =   undefined  :: fun((term()) -> boolean()),
     expected    =   undefined  :: term(),
-    desc        =   ""         :: string() | atom()
+    desc        =   ""         :: string() | atom() | fun((term(), term()) -> string())
 }).
+
+-define(MATCHER(MatchFun, Expected, Desc),
+  #'hamcrest.matchspec'{
+    matcher=MatchFun,
+    expected=Expected,
+    desc=Desc
+  }).
