@@ -122,7 +122,7 @@ example rewritten using the alternative API:
 		#'hamcrest.matchspec'{
             matcher     =
                         fun(X) ->
-                            case re:run(X, "^[\\d]*$") of
+                            case re:run(X, Rx) of
                                 {match,_} -> true;
                                 _ -> false
                             end
