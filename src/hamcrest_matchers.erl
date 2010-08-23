@@ -37,6 +37,7 @@
 -import(hamcrest, [message/4]).
 
 -export([
+    all_of/1,
     anything/0,
     any_of/1,
     is/1,
@@ -101,6 +102,21 @@ any_of(Matchers) when is_list(Matchers) ->
   end,
   #'hamcrest.matchspec'{
     matcher     = fun(X) -> lists:member(true, [ (MatchFun(M))(X) || M <- Matchers ]) end,
+    desc        = fun(Expected,Actual) ->
+                    message(value, "matching any of", Expected, Actual)
+                  end,
+    expected    = {anyof, Matchers}
+  }.
+
+-spec(all_of/1 :: (list(fun((term()) -> boolean()))) -> #'hamcrest.matchspec'{};
+                  (list(#'hamcrest.matchspec'{})) -> #'hamcrest.matchspec'{}).
+all_of(Matchers) when is_list(Matchers) ->
+  MatchFun =
+  fun(M) when is_function(M) -> M;
+     (#'hamcrest.matchspec'{matcher=F}) -> F
+  end,
+  #'hamcrest.matchspec'{
+    matcher     = fun(X) -> not(lists:member(false, [ (MatchFun(M))(X) || M <- Matchers ])) end,
     desc        = fun(Expected,Actual) ->
                     message(value, "matching any of", Expected, Actual)
                   end,
