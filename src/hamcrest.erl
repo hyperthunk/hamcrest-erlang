@@ -128,7 +128,7 @@ describe(expected_fail, {Class, Reason}, _) ->
   describe("Expected ~p due to ~p, but operation succeeded!", Class, Reason).
 
 describe_spec(Actual, Matchers) ->
-  [ describe(Matcher, Actual) ++ "\n" || Matcher <- Matchers ].
+  lists:flatten([ describe(Matcher, Actual) ++ "\n" || Matcher <- Matchers ]).
 
 describe_error(#'hamcrest.matchspec'{ desc=expected_fail,
                                       expected={Class, Reason} },
