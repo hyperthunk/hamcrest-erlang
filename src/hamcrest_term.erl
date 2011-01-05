@@ -1,4 +1,3 @@
-
 %% -----------------------------------------------------------------------------
 %%
 %% Hamcrest Erlang.
@@ -25,50 +24,10 @@
 %% -----------------------------------------------------------------------------
 %% @author Tim Watson <watson.timothy@gmail.com>
 %% @copyright 2010 Tim Watson.
+%% @doc Library functions for pretty printing and formatting terms
+%% @reference See <a href="http://code.google.com/p/hamcrest/">Hamcrest</a>
+%% for more information.
 %% -----------------------------------------------------------------------------
 
-%% module annotations
--module(hamcrest_SUITE).
+-module(hamcrest_term).
 
--include_lib("common_test/include/ct.hrl").
--include_lib("proper/include/proper.hrl").
--include("../include/test.hrl").
--include("../include/hamcrest.hrl").
-
--compile(export_all).
-
-all() -> ?CT_REGISTER_TESTS(?MODULE).
-
-assert_that_always_passes_input_to_matcher_fun(_) ->
-  P = ?FORALL(X, any(),
-    begin
-      F = fun(Y) -> Y == X end,
-      assert_that(X, F)
-    end),
-	?EQC(P).
-
-assert_that_ignores_test_descriptions_when_matchers_pass(_) ->
-  P = ?FORALL(X, any(),
-    begin
-      F = fun(Y) -> Y == X end,
-      assert_that(X, #'hamcrest.matchspec'{ matcher=F, desc="" })
-    end),
-	?EQC(P).
-
-assert_that_returns_true_from_match_success(_) ->
-  P = ?FORALL(X, any(),
-    assert_that(X, is(X))),
-  ?EQC(P).
-
-%% matchers_can_return_matchresults(_) ->
-
-failing_assertions_throw_exceptions(_) ->
-  MF = is(equal_to(2)),
-  ?assertException(error, {assertion_failed, "Expected a value equal to [2], but was [1]"},
-    assert_that(1, MF)).
-
-three_arg_assert_that_always_runs_supplied_fun(_) ->
-  AfterFun = fun() -> put(after_run, wasrun) end,
-  catch( ?assertThat(1, is(equal_to(2)), AfterFun) ),
-  WasRun = get(after_run),
-  ?assertThat(WasRun, is(equal_to(wasrun))).

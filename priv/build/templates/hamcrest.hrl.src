@@ -29,7 +29,7 @@
 -include_lib("hamcrest/include/hamcrest_internal.hrl").
 
 -ifdef(EUNIT_HRL).
-%% TODO: ......
+%% TODO: notify hamcrest that we are using eunit!?
 -endif.
 
 -ifndef(assertThat).
@@ -61,5 +61,5 @@
 	  end)())).
 -endif.
 
--import(hamcrest, [assert_that/2]).
+-import(hamcrest, [assert_that/2, assert_that/3]).
 -import(hamcrest_matchers, [{{ imports }}]).
