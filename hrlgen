@@ -32,6 +32,7 @@
 
 main(_) ->
     code:add_patha("ebin"),
+	code:add_path("deps/erlydtl/ebin"),
 	%% io:format("CODE:WHICH = ~p~n", [code:which(erlydtl)]),
 	%% erlang:display(os:getenv("ERL_LIBS")),
     Exports = lists:filter(
