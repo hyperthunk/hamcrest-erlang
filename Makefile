@@ -56,7 +56,8 @@ check: deps/proper
 	@(env ERL_LIBS=$(ERL_LIBS) ./rebar $$VERBOSE get-deps check-deps)
 
 compile: check
-	@(env ERL_LIBS=$(ERL_LIBS) ./rebar $$VERBOSE compile)
+	@(env ERL_LIBS=$(ERL_LIBS) ./rebar $$VERBOSE compile skip_deps=true)
+	escript hrlgen
 
 clean:
 	@(echo `env ERL_LIBS=$(ERL_LIBS) escript scripts/checkdeps "proper"` | \

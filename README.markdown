@@ -16,6 +16,15 @@ it should have, to a controlled level of precision, helps greatly in writing tes
 Such tests fail when the behaviour of the aspect under test deviates from the expected behaviour, yet continue
 to pass when minor, unrelated changes to the behaviour are made.
 
+Building Hamcrest-Erlang
+------------------------
+
+Make sure erlydtl is on your path, or install using epm. You need to do this first until I sort out the build.
+
+	epm install erlydtl
+
+Now you can compile and test by issuing `make clean test` on the command line.
+
 My first Hamcrest test
 ------------------------
 
