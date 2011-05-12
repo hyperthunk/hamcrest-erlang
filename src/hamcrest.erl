@@ -37,9 +37,7 @@
 -export([message/4
         ,describe/2
         ,describe_spec/2
-        ,heckle/2
-        ,default_heckle/1
-        ,default_heckle/2]).
+        ,heckle/2]).
 
 match(Value, MatchSpec) ->
   match(Value, MatchSpec, fun() -> ok end).
@@ -83,15 +81,12 @@ heckle(MatchSpec, Actual) ->
       Argv = [MatchSpec, Actual],
       apply(M, F, [Argv|A]);
     _ ->
-      default_heckle(MatchSpec, Actual),
       ok
   end.
 
-default_heckle(Args) ->
-  apply(?MODULE, default_heckle, Args).
-
-default_heckle(#'hamcrest.matchspec'{ expected=Exp }=_Matcher, Actual) ->
-  io:format("about to apply matcher [~p] against actual input [~p]~n", [Exp, Actual]).
+%% default_heckle(#'hamcrest.matchspec'{ expected=Exp }=_Matcher, Actual) ->
+%%default_heckle(_) ->
+%%  io:format("about to apply matcher [~p] against actual input [~p]~n", [Exp, Actual]).
 
 message(string, Def, Expected, Actual) ->
   lists:flatten(io_lib:format("Expected a string ~s [~s], but was [~s]",
