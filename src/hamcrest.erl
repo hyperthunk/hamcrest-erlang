@@ -33,7 +33,8 @@
 
 -include("hamcrest_internal.hrl").
 
--export([match/2, match/3, assert_that/2, assert_that/3]).
+-export([match/2, match/3, check/2,
+         assert_that/2, assert_that/3]).
 -export([message/4
         ,describe/2
         ,describe_spec/2
@@ -51,26 +52,37 @@ assert_that(Value, MatchSpec, RunAfter) when is_function(RunAfter, 0) ->
   after RunAfter()
   end.
 
-assert_that(Value, #'hamcrest.matchspec'{ matcher=MatchFunc }=MatchSpec) ->
+assert_that(Value, MatchSpec) ->
+  case check(Value, MatchSpec) of
+    {assertion_failed, _}=Failure ->
+      erlang:error(Failure);
+    true ->
+      true
+  end.
+
+check(Value, #'hamcrest.matchspec'{ matcher=MatchFunc }=MatchSpec) ->
   heckle(MatchSpec, Value),
-  try assert_that(Value, MatchFunc)
+  try check(Value, MatchFunc) of
+    true -> true;
+    {assertion_failed, expected_exit} ->
+      {assertion_failed, describe_error(MatchSpec, {success, Value})};
+    {assertion_failed, _} ->
+      {assertion_failed, describe(MatchSpec, Value)};
+    {assertion_override, Err} ->
+      {assertion_failed, Err};
+    What ->
+      {assertion_failed, What}
   catch
-    error:{assertion_failed, expected_exit} ->
-      erlang:error({assertion_failed, describe_error(MatchSpec, {success, Value})});
-    error:{assertion_failed, _} ->
-      erlang:error({assertion_failed, describe(MatchSpec, Value)});
-    error:{assertion_override, Err} ->
-      erlang:error({assertion_failed, Err});
     Class:Reason ->
-      erlang:error({assertion_failed, describe_error(MatchSpec, {Class, Reason})})
+      {assertion_failed, describe_error(MatchSpec, {Class, Reason})}
   end;
-assert_that(Value, MatchSpec) when is_function(MatchSpec, 1) ->
+check(Value, MatchSpec) when is_function(MatchSpec, 1) ->
   case MatchSpec(Value) of
     false ->
       case is_function(Value, 0) of
         %% TODO: ticket #
-        true  -> erlang:error({assertion_failed, expected_exit});   %% this actually seems bonkers, why so restrictive!?
-        false -> erlang:error({assertion_failed, default_describe(Value)})
+        true  -> {assertion_failed, expected_exit};
+        false -> {assertion_failed, default_describe(Value)}
       end;
     _ -> true
   end.
