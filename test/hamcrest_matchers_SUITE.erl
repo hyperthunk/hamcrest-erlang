@@ -245,7 +245,7 @@ match_mfa_should_defer_to_supplied_mfa(_) ->
     ?EQC(P).
 
 reverse_match_mfa_should_flip_its_arguments(_) ->
-  P = ?FORALL(X, string(),
+    P = ?FORALL(X, string(),
         ?IMPLIES(length(X) > 0,
         begin
             Head = hd(X),
@@ -256,15 +256,32 @@ reverse_match_mfa_should_flip_its_arguments(_) ->
         end)),
     ?EQC(P).
 
+has_same_contents_as_should_ignore_order(_) ->
+    P = ?FORALL(X, list(),
+        ?IMPLIES(length(X) > 0,
+        assert_that(lists:reverse(X), has_same_contents_as(X)))),
+    ?EQC(P).
+
+has_same_contents_as_should_recognise_singular_errors(_) ->
+    P = ?FORALL(X, list(),
+        ?IMPLIES(length(X) > 0,
+        assert_that(
+        fun() -> assert_that(tl(X), has_same_contents_as(X)) end, 
+        will_fail()))),
+    ?EQC(P).
+
+has_same_contents_as_should_work_for_empty_lists(_) ->
+    ?assertThat([], has_same_contents_as([])).
+
 match_mfa_should_fail_if_mf_is_invalid(_) ->
-  NoSuchMod = no_existing, NoSuchFunc = nor_i,
-  #'hamcrest.matchspec'{matcher=M} = match_mfa(NoSuchMod, NoSuchFunc, []),
-  M(any_input) == false.
+    NoSuchMod = no_existing, NoSuchFunc = nor_i,
+    #'hamcrest.matchspec'{matcher=M} = match_mfa(NoSuchMod, NoSuchFunc, []),
+    M(any_input) == false.
 
 match_mfa_should_fail_if_func_is_invalid(_) ->
-  NoSuchFunc = this_function_doesnt_exist,
-  #'hamcrest.matchspec'{matcher=M} = match_mfa(lists, NoSuchFunc, []),
-  M(any_input) == false.
+    NoSuchFunc = this_function_doesnt_exist,
+    #'hamcrest.matchspec'{matcher=M} = match_mfa(lists, NoSuchFunc, []),
+    M(any_input) == false.
 
 match_is_alive_should_identify_correct_process_status(_) ->
     Loop = fun(L) -> L(L) end,

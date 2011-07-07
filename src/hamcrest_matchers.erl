@@ -54,6 +54,7 @@
     will_fail/0,
     will_fail/2,
     has_length/1,
+    has_same_contents_as/1,
     contains_member/1,
     match_mfa/3,
     reverse_match_mfa/3,
@@ -261,6 +262,9 @@ has_length(Size) when is_number(Size) ->
         end
     end,
     Size).
+
+has_same_contents_as(Container) when is_list(Container) ->
+    all_of([reverse_match_mfa(?MODULE, check_member, [E]) || E <- Container]).
 
 contains_member(E) ->
     reverse_match_mfa(?MODULE, check_member, [E]).
