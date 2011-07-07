@@ -41,17 +41,17 @@ all() -> ?CT_REGISTER_TESTS(?MODULE).
 anything_always_matches(_) ->
     P = ?FORALL(X, any(),
             true == assert_that(X, is(anything()))),
-	?EQC(P).
+    ?EQC(P).
 
 is_matches_the_same_way_as_the_underlying_matcher(_) ->
     P = ?FORALL(X, any(),
             is(equal_to(X)) == equal_to(X)),
-	?EQC(P).
+    ?EQC(P).
 
 is_provides_convenient_shortcut_for_equal_to(_) ->
     P = ?FORALL(X, any(),
             is(X) == equal_to(X)),
-	?EQC(P).
+    ?EQC(P).
 
 is_not_evaluates_to_logical_negation_of_underlying_matcher(_) ->
     P = ?FORALL(X, {any(), any()},
@@ -60,7 +60,7 @@ is_not_evaluates_to_logical_negation_of_underlying_matcher(_) ->
                 #'hamcrest.matchspec'{matcher=F2} = is_not(equal_to(X)),
                 F1(X) == not(F2(X))
             end),
-	?EQC(P).
+    ?EQC(P).
 
 is_not_provides_convenient_shortcut_for_not_equal_to(_) ->
     P = ?FORALL({X, Y}, {any(), any()},
@@ -69,7 +69,7 @@ is_not_provides_convenient_shortcut_for_not_equal_to(_) ->
                 #'hamcrest.matchspec'{matcher=F2} = is_not(X),
                 F1(X) == not(F2(X))
             end),
-	?EQC(P).
+    ?EQC(P).
 
 reflexivity_of_equal_to(_) ->
     P = ?FORALL(X, any(),
@@ -78,13 +78,13 @@ reflexivity_of_equal_to(_) ->
                 Y = X,
                 assert_that(X, equal_to(Y))
               end)),
-	?EQC(P).
+    ?EQC(P).
 
 symmetry_of_equal_to(_) ->
     P = ?FORALL({X, Y}, {int(), int()},
             ?IMPLIES(Y == X,
                 assert_that(X, equal_to(Y)))),
-	?EQC(P).
+    ?EQC(P).
 
 exactly_equal_to_works_on_types_and_values(_) ->
     true = assert_that(atom, exactly_equal_to(atom)),
@@ -101,7 +101,7 @@ any_of_checks_the_logical_disjunction_of_a_list_of_matchers(_) ->
                 M = lists:map(fun(_) -> fun(_) -> true end end, XS),
                 assert_that(ignored, any_of(M))
             end)),
-	?EQC(P).
+    ?EQC(P).
 
 will_fail_asserts_failure(_) ->
     F = fun() -> erlang:error({assertion_failed, "Unexpected value"}) end,
@@ -126,7 +126,7 @@ greater_than_should_behave_like_built_in_operator(_) ->
   P = ?FORALL({X, Y}, {oneof([int(), real()]), oneof([int(), real()])},
         ?IMPLIES(Y > X,
         assert_that(Y, greater_than(X)))),
-	?EQC(P).
+    ?EQC(P).
 
 greater_than_should_fail_with_error_unlike_built_in_operator(_) ->
   P = ?FORALL({X, Y}, {oneof([int(), real()]), oneof([int(), real()])},
@@ -141,7 +141,7 @@ greater_than_should_fail_with_error_unlike_built_in_operator(_) ->
           {assertion_failed, Msg} == Reason
         end
       end)),
-	?EQC(P).
+    ?EQC(P).
 
 greater_than_or_equal_to_should_behave_like_built_in_operator(_) ->
   P = ?FORALL({X, Y},
@@ -150,7 +150,7 @@ greater_than_or_equal_to_should_behave_like_built_in_operator(_) ->
           #'hamcrest.matchspec'{matcher=M} = greater_than_or_equal_to(X),
           (Y >= X) == M(Y)
         end),
-	?EQC(P).
+    ?EQC(P).
 
 less_than_should_behave_like_built_in_operator(_) ->
   P = ?FORALL({X, Y},
@@ -159,7 +159,7 @@ less_than_should_behave_like_built_in_operator(_) ->
           #'hamcrest.matchspec'{matcher=M} = less_than(X),
           (Y < X) == M(Y)
         end),
-	?EQC(P).
+    ?EQC(P).
 
 less_than_or_equal_to_should_behave_like_built_in_operator(_) ->
   P = ?FORALL({X, Y},
@@ -168,7 +168,7 @@ less_than_or_equal_to_should_behave_like_built_in_operator(_) ->
           #'hamcrest.matchspec'{matcher=M} = less_than_or_equal_to(X),
           (Y =< X) == M(Y)
         end),
-	?EQC(P).
+    ?EQC(P).
 
 contains_string_should_get_proper_subset_in_all_cases(_) ->
   P = ?FORALL({X, Y}, {string(), int()},
@@ -205,7 +205,7 @@ starts_with_should_only_match_first_portion_of_string(_) ->
           Val = (starts_with(RStr))(X),
           not Val
         end)),
-	?EQC(P).
+    ?EQC(P).
 
 ends_with_should_only_match_last_portion_of_string(_) ->
   P = ?FORALL({X, Y}, {string(), int()},
@@ -224,14 +224,14 @@ ends_with_should_only_match_last_portion_of_string(_) ->
           %%Val = (ends_with(LStr))(X),
           %%not Val
         end)),
-	?EQC(P).
+    ?EQC(P).
 
 has_length_should_match_length(_) ->
   P = ?FORALL(XS, list(),
       begin
         assert_that(XS, has_length(length(XS)))
       end),
-	?EQC(P).
+    ?EQC(P).
 
 match_mfa_should_defer_to_supplied_mfa(_) ->
   P = ?FORALL(X, string(),
@@ -242,7 +242,7 @@ match_mfa_should_defer_to_supplied_mfa(_) ->
           end,
           assert_that(hd(X), IsMemberOf(X))
         end)),
-	?EQC(P).
+    ?EQC(P).
 
 reverse_match_mfa_should_flip_its_arguments(_) ->
   P = ?FORALL(X, string(),
@@ -254,7 +254,7 @@ reverse_match_mfa_should_flip_its_arguments(_) ->
             assert_that(gb_sets:from_list(X), contains_member(Head)),
             assert_that(ordsets:from_list(X), contains_member(Head))
         end)),
-	?EQC(P).
+    ?EQC(P).
 
 match_mfa_should_fail_if_mf_is_invalid(_) ->
   NoSuchMod = no_existing, NoSuchFunc = nor_i,
@@ -267,36 +267,36 @@ match_mfa_should_fail_if_func_is_invalid(_) ->
   M(any_input) == false.
 
 match_is_alive_should_identify_correct_process_status(_) ->
-	Loop = fun(L) -> L(L) end,
-	OkPid = spawn(fun() -> Loop(Loop) end),
-	Sender = self(),
-	BadPid = spawn(fun() -> ct:pal("~p dying...", [self()]), Sender ! ready, exit(normal) end),
-	receive ready -> ok end,
-	?assertThat(OkPid, isalive()),
-	?assertThat(BadPid, isdead()).
+    Loop = fun(L) -> L(L) end,
+    OkPid = spawn(fun() -> Loop(Loop) end),
+    Sender = self(),
+    BadPid = spawn(fun() -> ct:pal("~p dying...", [self()]), Sender ! ready, exit(normal) end),
+    receive ready -> ok end,
+    ?assertThat(OkPid, isalive()),
+    ?assertThat(BadPid, isdead()).
 
 is_empty_works_for_lists(_) ->
-	?assertThat([], isempty()),
-	Empty = fun hamcrest:isempty/0,
-	?assertThat([1,2,3], is_not(Empty)).
+    ?assertThat([], isempty()),
+    Empty = fun hamcrest:isempty/0,
+    ?assertThat([1,2,3], is_not(Empty)).
 
 is_empty_works_for_tuples(_) ->
-	?assertThat({}, isempty()),
-	Empty = fun hamcrest:isempty/0,
-	?assertThat({ok, server_id}, is_not(Empty)).
+    ?assertThat({}, isempty()),
+    Empty = fun hamcrest:isempty/0,
+    ?assertThat({ok, server_id}, is_not(Empty)).
 
 is_empty_works_for_sets(_) ->
-	?assertThat(sets:new(), isempty()),
-	Empty = fun hamcrest:isempty/0,
-	?assertThat(sets:from_list([1,2,3]), is_not(Empty)).
+    ?assertThat(sets:new(), isempty()),
+    Empty = fun hamcrest:isempty/0,
+    ?assertThat(sets:from_list([1,2,3]), is_not(Empty)).
 
 is_empty_works_for_gb_sets(_) ->
-	?assertThat(gb_sets:new(), isempty()),
-	Empty = fun hamcrest:isempty/0,
-	?assertThat(gb_sets:from_list([1,2,3]), is_not(Empty)).
+    ?assertThat(gb_sets:new(), isempty()),
+    Empty = fun hamcrest:isempty/0,
+    ?assertThat(gb_sets:from_list([1,2,3]), is_not(Empty)).
 
 is_empty_pukes_for_other_inputs(_) ->
-	?assertThat(
-		fun() -> ?assertThat(10, isempty()) end,
-		will_fail()
-	).
+    ?assertThat(
+        fun() -> ?assertThat(10, isempty()) end,
+        will_fail()
+    ).

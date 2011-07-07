@@ -65,244 +65,247 @@
 
 -spec(will_fail/0 :: () -> fun((fun(() -> any())) -> any())).
 will_fail() ->
-  Matcher =
-  fun(F) ->
-    try F() of
-        _ -> false
-    catch _:_ -> true
-    end
-  end,
-  ?MATCHER(Matcher, expected_fail, {oneof, {exit,error,exception}}).
+    Matcher = fun(F) ->
+        try F() of
+            _ -> false
+        catch _:_ -> true end
+    end,
+    ?MATCHER(Matcher, expected_fail, {oneof, {exit,error,exception}}).
 
 -spec(will_fail/2 :: (atom(), term()) -> #'hamcrest.matchspec'{}).
 will_fail(Type, Reason) ->
-  Matcher =
-  fun(F) ->
-    try F() of
-        _ -> false
-    catch Type:Reason -> true
-    end
-  end,
-  #'hamcrest.matchspec'{
-    matcher     = Matcher,
-    desc        = expected_fail,
-    expected    = {Type, Reason}
-  }.
+    Matcher = fun(F) ->
+        try F() of
+            _ -> false
+        catch Type:Reason -> true end
+    end,
+    #'hamcrest.matchspec'{
+        matcher     = Matcher,
+        desc        = expected_fail,
+        expected    = {Type, Reason}
+    }.
 
 -spec(anything/0 :: () -> fun((term()) -> true)).
 anything() ->
-  fun(_) -> true end.
+    fun(_) -> true end.
 
 -spec(any_of/1 :: (list(fun((term()) -> boolean()))) -> #'hamcrest.matchspec'{};
                   (list(#'hamcrest.matchspec'{})) -> #'hamcrest.matchspec'{}).
 any_of(Matchers) when is_list(Matchers) ->
-  MatchFun =
-  fun(M) when is_function(M) -> M;
+    MatchFun =
+    fun(M) when is_function(M) -> M;
      (#'hamcrest.matchspec'{matcher=F}) -> F
-  end,
-  #'hamcrest.matchspec'{
-    matcher     = fun(X) -> lists:member(true, [ (MatchFun(M))(X) || M <- Matchers ]) end,
-    desc        = fun(Expected,Actual) ->
-                    message(value, "matching any of", Expected, Actual)
-                  end,
-    expected    = {anyof, Matchers}
-  }.
+    end,
+    #'hamcrest.matchspec'{
+        matcher     = fun(X) -> lists:member(true, 
+                                    [ (MatchFun(M))(X) || M <- Matchers ]) end,
+        desc        = fun(Expected,Actual) ->
+                        message(value, "matching any of", Expected, Actual)
+                      end,
+        expected    = {anyof, Matchers}
+    }.
 
 -spec(all_of/1 :: (list(fun((term()) -> boolean()))) -> #'hamcrest.matchspec'{};
                   (list(#'hamcrest.matchspec'{})) -> #'hamcrest.matchspec'{}).
 all_of(Matchers) when is_list(Matchers) ->
-  MatchFun =
-  fun(M) when is_function(M) -> M;
-     (#'hamcrest.matchspec'{matcher=F}) -> F
-  end,
-  #'hamcrest.matchspec'{
-    matcher     = fun(X) -> not(lists:member(false, [ (MatchFun(M))(X) || M <- Matchers ])) end,
-    desc        = fun(Expected,Actual) ->
-                    message(value, "matching any of", Expected, Actual)
-                  end,
-    expected    = {anyof, Matchers}
-  }.
+    MatchFun = fun(M) when is_function(M) -> M;
+       (#'hamcrest.matchspec'{matcher=F}) -> F
+    end,
+    #'hamcrest.matchspec'{
+        matcher     = fun(X) -> not(lists:member(false, 
+                                    [ (MatchFun(M))(X) || M <- Matchers ])) end,
+        desc        = fun(Expected,Actual) ->
+                        message(value, "matching any of", Expected, Actual)
+                      end,
+        expected    = {anyof, Matchers}
+    }.
 
 -spec(equal_to/1 :: (term()) -> #'hamcrest.matchspec'{}).
 equal_to(Y) ->
-  #'hamcrest.matchspec'{
-    matcher     = fun(X) -> X == Y end,
-    desc        = fun(Expected,Actual) ->
-                    message(value, "equal to", Expected, Actual)
-                  end,
-    expected    = Y
-  }.
+    #'hamcrest.matchspec'{
+        matcher     = fun(X) -> X == Y end,
+        desc        = fun(Expected,Actual) ->
+                        message(value, "equal to", Expected, Actual)
+                      end,
+        expected    = Y
+    }.
 
 -spec(exactly_equal_to/1 :: (term()) -> #'hamcrest.matchspec'{}).
 exactly_equal_to(X) ->
-  #'hamcrest.matchspec'{
-    matcher     = fun(Y) -> X =:= Y end,
-    desc        = fun(Expected,Actual) ->
-                    message(value, "exactly equal to", Expected, Actual)
-                  end,
-    expected    = X
-  }.
+    #'hamcrest.matchspec'{
+        matcher     = fun(Y) -> X =:= Y end,
+        desc        = fun(Expected,Actual) ->
+                        message(value, "exactly equal to", Expected, Actual)
+                      end,
+        expected    = X
+    }.
 
 -spec(is/1 :: (Y::fun((X::term()) -> boolean())) -> fun((X::term()) -> boolean());
               (Y::#'hamcrest.matchspec'{}) -> #'hamcrest.matchspec'{};
               (Y) -> fun((Y) -> boolean())).
 is(Matcher) when is_function(Matcher) ->
-  Matcher;
+    Matcher;
 is(Matcher) when is_record(Matcher, 'hamcrest.matchspec') ->
-  Matcher;
+    Matcher;
 is(Term) ->
-  equal_to(Term).
+    equal_to(Term).
 
--spec(is_not/1 :: (Y::fun((X::term()) -> boolean())) -> fun((X::term()) -> boolean());
-                  (Y::#'hamcrest.matchspec'{}) -> #'hamcrest.matchspec'{};
+-spec(is_not/1 :: (Y::fun((X::term()) -> boolean())) -> 
+                        fun((X::term()) -> boolean());
+                  (Y::#'hamcrest.matchspec'{}) -> 
+                        #'hamcrest.matchspec'{};
                   (term()) -> #'hamcrest.matchspec'{}).
 is_not(Matcher) when is_function(Matcher, 1) ->
   fun(X) -> not(Matcher(X)) end;
-is_not(#'hamcrest.matchspec'{ matcher=MatchFun }=MatchSpec) when is_record(MatchSpec, 'hamcrest.matchspec') ->
+is_not(#'hamcrest.matchspec'{ matcher=MatchFun }=MatchSpec) 
+    when is_record(MatchSpec, 'hamcrest.matchspec') ->
   MatchSpec#'hamcrest.matchspec'{ matcher = (fun(X) -> not(MatchFun(X)) end) };
 is_not(Term) ->
   is_not(equal_to(Term)).
 
 -spec(greater_than/1 :: (number()) -> #'hamcrest.matchspec'{}).
 greater_than(X) ->
-  #'hamcrest.matchspec'{
-    matcher     = fun(Y) -> Y > X end,
-    desc        = fun(Expected,Actual) ->
-                    message(value, "greater than", Expected, Actual)
-                  end,
-    expected    = X
-  }.
+    #'hamcrest.matchspec'{
+        matcher     = fun(Y) -> Y > X end,
+        desc        = fun(Expected,Actual) ->
+                        message(value, "greater than", Expected, Actual)
+                      end,
+        expected    = X
+    }.
 
 -spec(greater_than_or_equal_to/1 :: (number()) -> #'hamcrest.matchspec'{}).
 greater_than_or_equal_to(X) ->
-  #'hamcrest.matchspec'{
-    matcher     = fun(Y) -> Y >= X end,
-    desc        = fun(Expected,Actual) ->
-                    message(value, "greater than or equal to", Expected, Actual)
-                  end,
-    expected    = X
-  }.
+    #'hamcrest.matchspec'{
+        matcher     = fun(Y) -> Y >= X end,
+        desc        = fun(Expected,Actual) ->
+                        message(value, "greater than or equal to", Expected, Actual)
+                      end,
+        expected    = X
+    }.
 
 -spec(less_than/1 :: (number()) -> #'hamcrest.matchspec'{}).
 less_than(X) ->
-  #'hamcrest.matchspec'{
-    matcher     = fun(Y) -> Y < X end,
-    desc        = fun(Expected,Actual) ->
-                    message(value, "less than", Expected, Actual)
-                  end,
-    expected    = X
-  }.
+    #'hamcrest.matchspec'{
+        matcher     = fun(Y) -> Y < X end,
+        desc        = fun(Expected,Actual) ->
+                        message(value, "less than", Expected, Actual)
+                      end,
+        expected    = X
+    }.
 
 -spec(less_than_or_equal_to/1 :: (number()) -> #'hamcrest.matchspec'{}).
 less_than_or_equal_to(X) ->
-  #'hamcrest.matchspec'{
-    matcher     = fun(Y) -> Y =< X end,
-    desc        = fun(Expected,Actual) ->
-                    message(value, "less than or equal to", Expected, Actual)
-                  end,
-    expected    = X
-  }.
+    #'hamcrest.matchspec'{
+        matcher     = fun(Y) -> Y =< X end,
+        desc        = fun(Expected,Actual) ->
+                        message(value, "less than or equal to", Expected, Actual)
+                      end,
+        expected    = X
+    }.
 
 -spec(contains_string/1 :: (string()) -> fun((string()) -> boolean())).
 contains_string([_|_]=X) ->
-  fun(Y) -> string:str(Y, X) > 0 end.
+    fun(Y) -> string:str(Y, X) > 0 end.
 
 -spec(starts_with/1 :: (string()) -> fun((string()) -> boolean())).
 starts_with(X) ->
-  fun(Y) -> string:str(Y, X) == 1 end.
+    fun(Y) -> string:str(Y, X) == 1 end.
 
 -spec(ends_with/1 :: (string()) -> fun((string()) -> boolean())).
 ends_with(X) ->
-  fun(Y) -> string:equal(string:right(Y, length(X)), X) end.
+    fun(Y) -> string:equal(string:right(Y, length(X)), X) end.
 
 match_mfa(Mod, Func, Args) ->
-  #'hamcrest.matchspec'{
-    matcher     = fun(X) -> catch(apply(Mod, Func, Args ++ [X])) == true end,
-    desc        = fun(_, Actual) ->
-                    Desc = "Expected the outcome of evaluating ~p:~p to be true, but was ~p",
-                    lists:flatten(io_lib:format(Desc, [Mod, Func, Actual]))
-                  end,
-    expected    = true
-  }.
+    #'hamcrest.matchspec'{
+        matcher     = fun(X) -> catch(apply(Mod, Func, Args ++ [X])) == true end,
+        desc        = fun(_, Actual) ->
+                        Desc = "Expected the outcome of evaluating "
+                               "~p:~p to be true, but was ~p",
+                        lists:flatten(io_lib:format(Desc, [Mod, Func, Actual]))
+                      end,
+        expected    = true
+    }.
 
 reverse_match_mfa(Mod, Func, Args) ->
-  #'hamcrest.matchspec'{
-    matcher     = fun(X) -> catch(apply(Mod, Func, [X|Args])) == true end,
-    desc        = fun(_, Actual) ->
-                    Desc = "Expected the outcome of evaluating ~p:~p to be true, but was ~p",
-                    lists:flatten(io_lib:format(Desc, [Mod, Func, Actual]))
-                  end,
-    expected    = true
-  }.
+    #'hamcrest.matchspec'{
+        matcher     = fun(X) -> catch(apply(Mod, Func, [X|Args])) == true end,
+        desc        = fun(_, Actual) ->
+                        Desc = "Expected the outcome of evaluating "
+                               "~p:~p to be true, but was ~p",
+                        lists:flatten(io_lib:format(Desc, [Mod, Func, Actual]))
+                      end,
+        expected    = true
+    }.
 
 isalive() ->
-	match_mfa(erlang, is_process_alive, []).
+    match_mfa(erlang, is_process_alive, []).
 
 isdead() ->
-	#'hamcrest.matchspec'{
-    matcher     = fun(X) -> Val = erlang:is_process_alive(X), ct:pal("~p is alive = ~p", [X, Val]), not(Val) end,
-    desc        = fun(_, _) ->
-                    "Expected the outcome of evaluating erlang:is_process_alive to be foobar false, but was true"
-                  end,
-    expected    = false
-  }.
+    #'hamcrest.matchspec'{
+        matcher     = fun(X) -> not erlang:is_process_alive(X) end,
+        desc        = fun(_, _) ->
+                        "Expected the outcome of evaluating erlang:is_process_alive "
+                        "to be false, but was true"
+                      end,
+        expected    = false
+    }.
 
 -spec(has_length/1 :: (number()) -> #'hamcrest.matchspec'{}).
 has_length(Size) when is_number(Size) ->
   ?MATCHER(fun(XS) -> length(XS) == Size end,
     fun(_, Actual) ->
-      Desc = "Expected a list of length ~p, but was ~p",
-      case is_list(Actual) of
-        true -> lists:flatten(io_lib:format(Desc, [Size, length(Actual)]));
-        false -> lists:flatten(io_lib:format(Desc, [Size, Actual]))
-      end
+        Desc = "Expected a list of length ~p, but was ~p",
+        case is_list(Actual) of
+            true -> lists:flatten(io_lib:format(Desc, [Size, length(Actual)]));
+            false -> lists:flatten(io_lib:format(Desc, [Size, Actual]))
+        end
     end,
     Size).
 
 contains_member(E) ->
-  reverse_match_mfa(?MODULE, check_member, [E]).
+    reverse_match_mfa(?MODULE, check_member, [E]).
 
 check_member(Container, E) when is_list(Container) ->
-  lists:member(E, Container);
+    lists:member(E, Container);
 check_member(Container, E) ->
-  ct:pal("checking for ~p in ~p, where~n", [E, Container]),
-  case sets:is_set(Container) of
-    true ->
-      sets:is_element(E, Container);
-    false ->
-      case gb_sets:is_set(Container) of
-        true -> gb_sets:is_element(E, Container);
+    ct:pal("checking for ~p in ~p, where~n", [E, Container]),
+    case sets:is_set(Container) of
+        true ->
+            sets:is_element(E, Container);
         false ->
-          case ordsets:is_set(Container) of
-            true ->
-              ordsets:is_element(E, Container);
-            false ->
-              case is_tuple(Container) of
-                true -> check_member(tuple_to_list(Container), E);
-                false -> false
-              end
-          end
-      end
-  end.
+            case gb_sets:is_set(Container) of
+                true -> gb_sets:is_element(E, Container);
+                false ->
+                    case ordsets:is_set(Container) of
+                        true ->
+                            ordsets:is_element(E, Container);
+                        false ->
+                            case is_tuple(Container) of
+                                true -> check_member(tuple_to_list(Container), E);
+                                false -> false
+                            end
+                    end
+            end
+    end.
 
 isempty() ->
-	match_mfa(?MODULE, check_isempty, []).
+    match_mfa(?MODULE, check_isempty, []).
 
 check_isempty([]) ->
-	true;
+    true;
 check_isempty({}) ->
-	true;
+    true;
 check_isempty(X) ->
-	case sets:is_set(X) of
-		true ->
-			sets:is_empty(X);
-		_ ->
-			case gb_sets:is_set(X) of
-				true -> gb_sets:is_empty(X);
-				_ ->
-          case ordsets:is_set(X) of
-            true -> ordsets:size(X) == 0;
-            false -> false
-          end
-			end
-	end.
+    case sets:is_set(X) of
+        true ->
+            sets:is_empty(X);
+        _ ->
+            case gb_sets:is_set(X) of
+                true -> gb_sets:is_empty(X);
+                _ ->
+                    case ordsets:is_set(X) of
+                        true -> ordsets:size(X) == 0;
+                        false -> false
+                    end
+            end
+    end.

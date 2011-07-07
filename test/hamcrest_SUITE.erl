@@ -45,7 +45,7 @@ assert_that_always_passes_input_to_matcher_fun(_) ->
       F = fun(Y) -> Y == X end,
       assert_that(X, F)
     end),
-	?EQC(P).
+    ?EQC(P).
 
 assert_that_ignores_test_descriptions_when_matchers_pass(_) ->
   P = ?FORALL(X, any(),
@@ -53,7 +53,7 @@ assert_that_ignores_test_descriptions_when_matchers_pass(_) ->
       F = fun(Y) -> Y == X end,
       assert_that(X, #'hamcrest.matchspec'{ matcher=F, desc="" })
     end),
-	?EQC(P).
+    ?EQC(P).
 
 assert_that_returns_true_from_match_success(_) ->
   P = ?FORALL(X, any(),
