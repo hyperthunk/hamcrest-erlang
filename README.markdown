@@ -19,11 +19,12 @@ to pass when minor, unrelated changes to the behaviour are made.
 Building Hamcrest-Erlang
 ------------------------
 
-Make sure erlydtl is on your path, or install using epm. You need to do this first until I sort out the build.
+Hamcrest-Erlang is built using rebar. You should use the bundled version of the 
+rebar executable however, because the build relies on some currently unsupported
+and experimental features. The following command will compile the sources and 
+generate the main header file:
 
-	epm install erlydtl
-
-Now you can compile and test by issuing `make clean test` on the command line.
+    $ ./rebar clean compile
 
 My first Hamcrest test
 ------------------------
@@ -31,16 +32,17 @@ My first Hamcrest test
 We'll start be writing a very simple EUnit test, but instead of using EUnit's ?assertEqual macro, we use
 Hamcrest's assert_that construct and the standard set of matchers:
 
-    -module(demo1_tests).
-	-compile(export_all).
+```erlang
+-module(demo1_tests).
+-compile(export_all).
 
-    -import(hamcrest, [assert_that/2]).
+-import(hamcrest, [assert_that/2]).
 
-	-include_lib("hamcrest/include/hamcrest.hrl").
+-include_lib("hamcrest/include/hamcrest.hrl").
 
-	using_assert_that_test() ->
-		assert_that(10, is(greater_than(2))).  %% returns true
-
+using_assert_that_test() ->
+    assert_that(10, is(greater_than(2))).  %% returns true
+```
 
 The assert_that function is a stylised sentence for making a test assertion. In this example, the subject of the
 assertion is the number 10 that is the first method parameter. The second method parameter is a matcher
@@ -96,23 +98,27 @@ own matcher you'll eliminate code duplication and make your tests more readable!
 
 Let's write our own matcher for testing if a string is comprised of only digits. This is the test we want to write:
 
-    string_is_only_digits_test() ->
-        assert_that("12345", is(only_digits())).
+```erlang
+string_is_only_digits_test() ->
+    assert_that("12345", is(only_digits())).
+```
 
 And here's the implementation:
 
-    -module(custom_matchers).
+```erlang
+-module(custom_matchers).
 
-	-export([only_digits/0]).
+-export([only_digits/0]).
 
-	only_digits() ->
-		fun only_digits/1.
+only_digits() ->
+    fun only_digits/1.
 
-	only_digits(X) ->
-		case re:run(X, "^[\\d]*$") of
-			{match,_} -> true;
-			_ -> false
-		end.
+only_digits(X) ->
+    case re:run(X, "^[\\d]*$") of
+        {match,_} -> true;
+        _ -> false
+    end.
+```
 
 The zero arity factory function we exported is responsible for creating the matcher fun, which should take 1 argument
 and return the atom 'true' if it succeeds, otherwise 'false'. Although returning a fun is a simple enough way to define
@@ -120,27 +126,29 @@ a matcher, there is a another way that allows you to specify the expected versus
 textual description that will be evaluated by hamcrest:assert_that/2 in case of match failures. Here's the only_digits/0
 example rewritten using the alternative API:
 
-    -module(custom_matchers).
+```erlang
+-module(custom_matchers).
 
-	-export([only_digits/0]).
+-export([only_digits/0]).
 
-	only_digits() ->
-		matches_regex("^[\\d]*$").
+only_digits() ->
+    matches_regex("^[\\d]*$").
 
-	matches_regex(Rx) ->
-		#'hamcrest.matchspec'{
-            matcher     =
-                        fun(X) ->
-                            case re:run(X, Rx) of
-                                {match,_} -> true;
-                                _ -> false
-                            end
-                        end,
-            desc        = fun(Expected,Actual) ->
-                            message(string, "matching the regex", Expected, Actual)
-                          end,
-            expected    = Rx
-        }.
+matches_regex(Rx) ->
+    #'hamcrest.matchspec'{
+        matcher     =
+                    fun(X) ->
+                        case re:run(X, Rx) of
+                            {match,_} -> true;
+                            _ -> false
+                        end
+                    end,
+        desc        = fun(Expected,Actual) ->
+                        message(string, "matching the regex", Expected, Actual)
+                      end,
+        expected    = Rx
+    }.
+```
 
 First of all, note that we're now calling the generic matches_regex/1 function which will operate over any supplied regex
 compatible with the 're' module. This function is returning an instance of the 'hamcrest.matchspec' record, defined in
@@ -154,26 +162,30 @@ something like `expected a <TYPE> <DESC> <EXPECTED>, but was <ACTUAL>` when call
 
 If you find the record syntax a little too verbose for your liking, there is a macro defined which cuts down on the noise somewhat:
 
-    will_fail() ->
-      Matcher =
-      fun(F) ->
-        try F() of
-            _ -> false
-        catch _:_ -> true
-        end
-      end,
-      ?MATCHER(Matcher, expected_fail, {oneof, {exit,error,exception}}).
+```erlang
+will_fail() ->
+  Matcher =
+  fun(F) ->
+    try F() of
+        _ -> false
+    catch _:_ -> true
+    end
+  end,
+  ?MATCHER(Matcher, expected_fail, {oneof, {exit,error,exception}}).
+```
 
 Another way to construct custom matchers is to use the match_mfa/3 function, which takes a module, function and its initial
 arguments and matches if adding the match input to the argument list and calling `apply(M,F,A)` evaluates to true. This takes
 away the headache of having to write the matchspec yourself, at the expense of a slightly less specific description provided
 by assert_that if the match fails. Here's an example usage taken from the tests and another taken from the core API itself:
 
-    isalive() ->
-      match_mfa(erlang, is_process_alive, []).
+```erlang
+isalive() ->
+  match_mfa(erlang, is_process_alive, []).
 
-    some_test(_) ->
-        IsMemberOf = fun(L) ->
-            match_mfa(lists, member, [L])
-        end,
-        assert_that(hd(X), IsMemberOf(X))
+some_test(_) ->
+    IsMemberOf = fun(L) ->
+        match_mfa(lists, member, [L])
+    end,
+    assert_that(hd(X), IsMemberOf(X))
+```

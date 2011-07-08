@@ -1,5 +1,3 @@
-#!/usr/bin/env escript
-
 %% -----------------------------------------------------------------------------
 %%
 %% Hamcrest Erlang.
@@ -29,27 +27,29 @@
 %%
 %% Generates hamcrest.hrl header file during build process.
 %% -----------------------------------------------------------------------------
+-module(header_generator).
+-export([post_compile/2]).
 
-main(_) ->
+post_compile(_, _) ->
+    %% TODO: reconsider this munging of the code path
     code:add_patha("ebin"),
-	code:add_path("deps/erlydtl/ebin"),
-	%% io:format("CODE:WHICH = ~p~n", [code:which(erlydtl)]),
-	%% erlang:display(os:getenv("ERL_LIBS")),
-    Exports = lists:filter(
-        fun({F,_}) -> F /= module_info end,
-        hamcrest_matchers:module_info(exports)),
+    code:add_path("deps/erlydtl/ebin"),
+    Exports = [ F || F <- hamcrest_matchers:module_info(exports), 
+                     F /= module_info ],
+    rebar_log:log(debug, "Adding header exports/imports: ~p~n", [Exports]),
     Imports = [ io_lib:format("~s/~p", [F,A]) || {F, A} <- Exports ],
-    Expr = lists:flatten(
-        lists:foldl(fun(In, Acc) -> lists:concat([In, ", ", Acc]) end, "", Imports)),
+    Expr = lists:flatten(lists:foldl(
+        fun(In, Acc) -> lists:concat([In, ", ", Acc]) end, "", Imports)),
     ImportList = string:substr(Expr, 1, length(Expr) - 2),
-	{ok, PWD} = file:get_cwd(),
-	HdrTemplate = filename:join(PWD, "priv/build/templates/hamcrest.hrl.src"),
-    ok = erlydtl:compile(HdrTemplate, header_template),
-    {ok, Res} = header_template:render([{imports, ImportList}]),
+    PWD = rebar_utils:get_cwd(),
+    Path = filename:join(PWD, "priv/build/templates/hamcrest.hrl.src"),
+    {ok, Bin} = file:read_file(Path),
+    Res = rebar_templater:render(Bin, dict:from_list([{imports, ImportList}])),
     Dest = filename:absname(filename:join(["include", "hamcrest.hrl"])),
     case file:write_file(Dest, list_to_binary(Res)) of
-        ok -> io:format("Header file(s) generated.~n", []);
+        ok -> 
+            rebar_log:log(info, "Header file(s) generated.~n", []),
+            ok;
         {error, WriteError} ->
-            io:format("Failed to write ~p: ~p~n", [Dest, WriteError]),
-            halt(1)
+            rebar_utils:abort("Failed to write ~p: ~p~n", [Dest, WriteError])
     end.
