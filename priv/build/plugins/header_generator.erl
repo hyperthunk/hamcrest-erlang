@@ -30,26 +30,30 @@
 -module(header_generator).
 -export([post_compile/2]).
 
-post_compile(_, _) ->
-    %% TODO: reconsider this munging of the code path
-    code:add_patha("ebin"),
-    code:add_path("deps/erlydtl/ebin"),
-    Exports = [ F || F <- hamcrest_matchers:module_info(exports), 
-                     F /= module_info ],
-    rebar_log:log(debug, "Adding header exports/imports: ~p~n", [Exports]),
-    Imports = [ io_lib:format("~s/~p", [F,A]) || {F, A} <- Exports ],
-    Expr = lists:flatten(lists:foldl(
-        fun(In, Acc) -> lists:concat([In, ", ", Acc]) end, "", Imports)),
-    ImportList = string:substr(Expr, 1, length(Expr) - 2),
-    PWD = rebar_utils:get_cwd(),
-    Path = filename:join(PWD, "priv/build/templates/hamcrest.hrl.src"),
-    {ok, Bin} = file:read_file(Path),
-    Res = rebar_templater:render(Bin, dict:from_list([{imports, ImportList}])),
-    Dest = filename:absname(filename:join(["include", "hamcrest.hrl"])),
-    case file:write_file(Dest, list_to_binary(Res)) of
-        ok -> 
-            rebar_log:log(info, "Header file(s) generated.~n", []),
-            ok;
-        {error, WriteError} ->
-            rebar_utils:abort("Failed to write ~p: ~p~n", [Dest, WriteError])
+post_compile(C, A) ->
+    code:add_patha(filename:join(rebar_config:get_global(base_dir, []), "ebin")),
+    hamcrest_matchers:module_info(exports),
+    case erlang:function_exported(hamcrest_matchers, module_info, 1) of
+        true ->
+            Exports = [ F || F <- hamcrest_matchers:module_info(exports), 
+                             F /= module_info ],
+            rebar_log:log(debug, "Adding header exports/imports: ~p~n", [Exports]),
+            Imports = [ io_lib:format("~s/~p", [F,A]) || {F, A} <- Exports ],
+            Expr = lists:flatten(lists:foldl(
+                fun(In, Acc) -> lists:concat([In, ", ", Acc]) end, "", Imports)),
+            ImportList = string:substr(Expr, 1, length(Expr) - 2),
+            PWD = rebar_utils:get_cwd(),
+            Path = filename:join(PWD, "priv/build/templates/hamcrest.hrl.src"),
+            {ok, Bin} = file:read_file(Path),
+            Res = rebar_templater:render(Bin, dict:from_list([{imports, ImportList}])),
+            Dest = filename:absname(filename:join(["include", "hamcrest.hrl"])),
+            case file:write_file(Dest, list_to_binary(Res)) of
+                ok -> 
+                    rebar_log:log(info, "Header file(s) generated.~n", []),
+                    ok;
+                {error, WriteError} ->
+                    rebar_utils:abort("Failed to write ~p: ~p~n", [Dest, WriteError])
+            end;
+        false ->
+            ok
     end.

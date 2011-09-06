@@ -24,7 +24,9 @@ rebar executable however, because the build relies on some currently unsupported
 and experimental features. The following command will compile the sources and 
 generate the main header file:
 
-    $ ./rebar clean compile
+    $ ./rebar clean && ./rebar compile
+
+Please note that currently there is a bug in the build plugins that requires these steps to be executed separately.
 
 My first Hamcrest test
 ------------------------
