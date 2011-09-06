@@ -30,11 +30,10 @@
 -module(header_generator).
 -export([post_compile/2]).
 
-post_compile(C, A) ->
-    code:add_patha(filename:join(rebar_config:get_global(base_dir, []), "ebin")),
-    hamcrest_matchers:module_info(exports),
-    case erlang:function_exported(hamcrest_matchers, module_info, 1) of
+post_compile(_, AppFile) ->
+    case lists:suffix("hamcrest.app", AppFile) of
         true ->
+            code:add_patha(filename:join(rebar_config:get_global(base_dir, []), "ebin")),
             Exports = [ F || F <- hamcrest_matchers:module_info(exports), 
                              F /= module_info ],
             rebar_log:log(debug, "Adding header exports/imports: ~p~n", [Exports]),
