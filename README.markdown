@@ -1,4 +1,4 @@
-Hamcrest Erlang
+Hamcrest Erlang [![travis](https://secure.travis-ci.org/hyperthunk/hamcrest-erlang.png)](http://travis-ci.org/hyperthunk/hamcrest-erlang)
 =============================
 
 This is an implementation of Hamcrest for the [Erlang programming language](http://www.erlang.org/). This
