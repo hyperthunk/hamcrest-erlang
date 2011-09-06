@@ -25,7 +25,7 @@
 %% @author Tim Watson <watson.timothy@gmail.com>
 %% @copyright 2010 Tim Watson.
 %%
-%% Generates hamcrest.hrl header file during build process.
+%% Generates hamcrest.hrl header file during build process. Loaded by rebar.
 %% -----------------------------------------------------------------------------
 -module(header_generator).
 -export([post_compile/2]).
