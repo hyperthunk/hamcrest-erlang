@@ -33,12 +33,29 @@
 
 -include("hamcrest_internal.hrl").
 
--export([match/2, match/3, check/2,
-         assert_that/2, assert_that/3]).
--export([message/4
-        ,describe/2
-        ,describe_spec/2
-        ,heckle/2]).
+-export_type([matcher/0]).
+
+-export([match/2,
+         match/3,
+         check/2,
+         assert_that/2,
+         assert_that/3,
+         message/4,
+         describe/2,
+         describe_spec/2,
+         heckle/2]).
+
+
+%%%============================================================================
+%%% Types
+%%%============================================================================
+
+-opaque matcher() :: #'hamcrest.matchspec'{}.
+
+
+%%%============================================================================
+%%% API
+%%%============================================================================
 
 match(Value, MatchSpec) ->
   match(Value, MatchSpec, fun() -> ok end).
