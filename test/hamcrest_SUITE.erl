@@ -78,6 +78,10 @@ three_arg_assert_that_always_runs_supplied_fun(_) ->
   WasRun = get(after_run),
   ?assertThat(WasRun, is(equal_to(wasrun))).
 
+is_matcher(_) ->
+    true == hamcrest:is_matcher(equal_to(1)),
+    false == hamcrest:is_matcher(blah).
+
 -ifdef('eqc').
 something() -> eqc_gen:oneof([int(), nat(), list(char), binary()]).
 -else.
