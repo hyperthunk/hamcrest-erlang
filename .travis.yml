@@ -1,7 +1,5 @@
 language: erlang
 otp_release:
-   - R14B03
-   - R14B01
-   - R13B04
+   - R15B01
 before_script: "make build"
 script: "make test"
