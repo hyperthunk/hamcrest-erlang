@@ -1,13 +1,14 @@
 
-all: clean build test
+.PHONY: clean build test
+
+all: clean test
 
 clean:
 	@(./rebar clean)
 
 build:
-	@(./rebar get-deps compile)
+	@(./rebar compile xref)
 
-test:
-	@(./rebar skip_deps=true ct)
-
-.PHONY: deps test clean build
+test: build
+	@(./rebar -C test.config get-deps compile)
+	@(./rebar -C test.config skip_deps=true ct)

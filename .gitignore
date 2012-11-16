@@ -14,3 +14,4 @@ test/logs/
 ebin/*.beam
 logs/*
 include/hamcrest.hrl
+qc.hrl

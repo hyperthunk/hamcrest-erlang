@@ -38,7 +38,7 @@
             Mod:module_info(exports)
         )
     ],
-    ct:pal("registering ~p~n", [All]),
+    ct:log("registering ~p~n", [All]),
     All).
 
 %% NB: copied verbatim from eunit.hrl because proper_common.hrl redefined the LET macro, 
@@ -71,9 +71,10 @@
 	  end)())).
 
 -define(EQC(P),
-    case code:lib_dir(eqc, include) of
-        {error, bad_name} ->
-            proper:quickcheck(P);
-        _ ->
-            eqc:check(P)
+    begin
+    Mod = case code:lib_dir(eqc, include) of
+              {error, bad_name} -> proper;
+              _                 -> eqc
+          end,
+    true = Mod:quickcheck(P)
     end).
