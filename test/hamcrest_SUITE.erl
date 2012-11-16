@@ -31,8 +31,8 @@
 -module(hamcrest_SUITE).
 
 -include_lib("common_test/include/ct.hrl").
--include_lib("proper/include/proper.hrl").
--include("../include/test.hrl").
+-include("test.hrl").
+-include("qc.hrl").
 -include("../include/hamcrest.hrl").
 
 -compile(export_all).
@@ -40,15 +40,15 @@
 all() -> ?CT_REGISTER_TESTS(?MODULE).
 
 assert_that_always_passes_input_to_matcher_fun(_) ->
-  P = ?FORALL(X, any(),
+  P = ?FORALL(X, something(),
     begin
-      F = fun(Y) -> Y == X end,
-      assert_that(X, F)
+      M = ?MATCHER(fun(Y) -> Y == X end, equality, X),
+      assert_that(X, M)
     end),
     ?EQC(P).
 
 assert_that_ignores_test_descriptions_when_matchers_pass(_) ->
-  P = ?FORALL(X, any(),
+  P = ?FORALL(X, something(),
     begin
       F = fun(Y) -> Y == X end,
       assert_that(X, #'hamcrest.matchspec'{ matcher=F, desc="" })
@@ -56,7 +56,7 @@ assert_that_ignores_test_descriptions_when_matchers_pass(_) ->
     ?EQC(P).
 
 assert_that_returns_true_from_match_success(_) ->
-  P = ?FORALL(X, any(),
+  P = ?FORALL(X, something(),
     assert_that(X, is(X))),
   ?EQC(P).
 
@@ -64,7 +64,12 @@ assert_that_returns_true_from_match_success(_) ->
 
 failing_assertions_throw_exceptions(_) ->
   MF = is(equal_to(2)),
-  ?assertException(error, {assertion_failed, "Expected a value equal to [2], but was [1]"},
+  ?assertException(
+     error,
+     {assertion_failed,
+      [{expected,2},
+       {actual,1},
+       {matcher,equal_to}]},
     assert_that(1, MF)).
 
 three_arg_assert_that_always_runs_supplied_fun(_) ->
@@ -72,3 +77,9 @@ three_arg_assert_that_always_runs_supplied_fun(_) ->
   catch( ?assertThat(1, is(equal_to(2)), AfterFun) ),
   WasRun = get(after_run),
   ?assertThat(WasRun, is(equal_to(wasrun))).
+
+-ifdef('eqc').
+something() -> eqc_gen:oneof([int(), nat(), list(char), binary()]).
+-else.
+something() -> any().
+-endif.

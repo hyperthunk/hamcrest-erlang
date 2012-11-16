@@ -74,5 +74,5 @@ end).
       end)())).
 -endif.
 
--import(hamcrest, [assert_that/2, assert_that/3]).
+-import(hamcrest, [assert_that/2, assert_that/3, match/2, match/3]).
 -import(hamcrest_matchers, [{{ imports }}]).

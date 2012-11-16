@@ -29,15 +29,22 @@
 -record('hamcrest.matchspec', {
     matcher     =   undefined  :: fun((term()) -> boolean()),
     expected    =   undefined  :: term(),
-    desc        =   ""         :: string() | atom() | fun((term(), term()) -> string())
+    desc        =   ""         :: term()
 }).
 
+-type(matchfun(A) :: fun((A) -> boolean())).
+-opaque(matchspec(A) :: {'hamcrest.matchspec', matchfun(A), term(), term()}).
+
+-type(container_t() :: list() | set() | gb_set()).
+
+-export_type([matchspec/1]).
+
 -define(MATCHER(MatchFun, Expected, Desc),
-  #'hamcrest.matchspec'{
-    matcher=MatchFun,
-    expected=Expected,
-    desc=Desc
-  }).
+        #'hamcrest.matchspec'{
+          matcher=MatchFun,
+          expected=Expected,
+          desc=Desc
+        }).
 
 -define(HECKLE(M,F,A),
   .application:set_env(hamcrest, heckle, [M, F, A])).
