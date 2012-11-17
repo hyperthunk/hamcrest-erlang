@@ -33,7 +33,8 @@
 
 -include("hamcrest_internal.hrl").
 
--export([match/2,
+-export([is_matcher/1,
+         match/2,
          match/3,
          check/2,
          assert_that/2,
@@ -44,6 +45,12 @@
 %%%============================================================================
 %%% API
 %%%============================================================================
+
+%% @doc Returns `true' if the specified term is a valid hamcrest matcher,
+%% otherwise `false'.
+-spec(is_matcher/1 :: (any()) -> boolean()).
+is_matcher(Something) ->
+  erlang:is_record(Something, 'hamcrest.matchspec').
 
 -spec(match/2 :: (A, matchspec(A)) -> boolean() | no_return()
                                       when A :: term()).
