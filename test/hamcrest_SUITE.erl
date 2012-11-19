@@ -79,8 +79,33 @@ three_arg_assert_that_always_runs_supplied_fun(_) ->
   ?assertThat(WasRun, is(equal_to(wasrun))).
 
 is_matcher(_) ->
-    true == hamcrest:is_matcher(equal_to(1)),
-    false == hamcrest:is_matcher(blah).
+  ?assertThat(hamcrest:is_matcher(blah), is_false()),
+  ?assertThat(hamcrest:is_matcher(contains_string("1234")), is_true()),
+  ?assertThat(hamcrest:is_matcher(has_same_contents_as("1234")), is_true()),
+  ?assertThat(hamcrest:is_matcher(foreach(is_true())), is_true()),
+  ?assertThat(hamcrest:is_matcher(has_length(10)), is_true()),
+  ?assertThat(hamcrest:is_matcher(all_of([is_true(), is_false()])), is_true()),
+  ?assertThat(hamcrest:is_matcher(any_of([is_true(), is_false()])), is_true()),
+  ?assertThat(hamcrest:is_matcher(reverse_match_mfa(erlang, is_process_alive, [])), is_true()),
+  P = ?FORALL(X, list(something()),
+          begin
+              [case lists:member(F, [foreach, all_of, any_of,
+                                     reverse_match_mfa, has_length,
+                                     has_same_contents_as, check_member,
+                                     check_isempty, module_info,
+                                     contains_string]) of
+                  true ->
+                      ok;
+                  _ ->
+                      Fn = fun hamcrest_matchers:F/A,
+                      Matcher = apply(Fn, lists:duplicate(A, X)),
+                      io:format("checking ~p for ~p~n", [Matcher, {F, A, Fn}]),
+                      ?assertThat(hamcrest:is_matcher(Matcher),
+                                 is_true())
+               end || {F, A} <- hamcrest_matchers:module_info(exports)],
+               true
+          end),
+  ?EQC(P).
 
 -ifdef('eqc').
 something() -> eqc_gen:oneof([int(), nat(), list(char), binary()]).

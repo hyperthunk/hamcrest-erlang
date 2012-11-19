@@ -33,11 +33,11 @@
 }).
 
 -type(matchfun(A) :: fun((A) -> boolean())).
--opaque(matchspec(A) :: {'hamcrest.matchspec', matchfun(A), term(), term()}).
+-opaque(matchspec() :: #'hamcrest.matchspec'{}).
 
 -type(container_t() :: list() | set() | gb_set()).
 
--export_type([matchspec/1]).
+-export_type([matchspec/0]).
 
 -define(MATCHER(MatchFun, Expected, Desc),
         #'hamcrest.matchspec'{

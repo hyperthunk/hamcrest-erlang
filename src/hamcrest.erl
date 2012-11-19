@@ -52,27 +52,23 @@
 is_matcher(Something) ->
   erlang:is_record(Something, 'hamcrest.matchspec').
 
--spec(match/2 :: (A, matchspec(A)) -> boolean() | no_return()
-                                      when A :: term()).
+-spec(match/2 :: (term(), matchspec()) -> boolean()).
 match(Value, MatchSpec) ->
   match(Value, MatchSpec, fun() -> ok end).
 
--spec(match/3 :: (A, matchspec(A),
-                  fun(() -> any())) -> boolean() | no_return()
-                                       when A :: term()).
+-spec(match/3 :: (term(), matchspec(),
+                  fun(() -> any())) -> boolean()).
 match(Value, MatchSpec, RunAfter) ->
   catch( assert_that(Value, MatchSpec, RunAfter) ) == true.
 
--spec(assert_that/3 :: (A, matchspec(A),
-                        fun(() -> any())) -> boolean() | no_return()
-                                             when A :: term()).
+-spec(assert_that/3 :: (term(), matchspec(),
+                        fun(() -> any())) -> 'true' | no_return()).
 assert_that(Value, MatchSpec, RunAfter) when is_function(RunAfter, 0) ->
   try assert_that(Value, MatchSpec)
   after RunAfter()
   end.
 
--spec(assert_that/2 :: (A, matchspec(A)) -> boolean() | no_return()
-                                            when A :: term()).
+-spec(assert_that/2 :: (term(), matchspec()) -> 'true' | no_return()).
 assert_that(Value, MatchSpec) ->
   case check(Value, MatchSpec) of
     {assertion_failed, _}=Failure ->
@@ -83,8 +79,7 @@ assert_that(Value, MatchSpec) ->
       exit({what_the, Other})
   end.
 
--spec(check/2 :: (A, matchspec(A)) -> 'true' | {assertion_failed, term()}
-                                      when A :: term()).
+-spec(check/2 :: (term(), matchspec()) -> 'true' | {assertion_failed, term()}).
 check(Value, #'hamcrest.matchspec'{ matcher=MatchFunc }=MatchSpec) ->
   heckle(MatchSpec, Value),
   try MatchFunc(Value) of
@@ -102,7 +97,7 @@ check(Value, #'hamcrest.matchspec'{ matcher=MatchFunc }=MatchSpec) ->
       {assertion_failed, describe(MatchSpec, {Class, Reason})}
   end.
 
--spec(heckle/2 :: (matchspec(term()), any()) -> any()).
+-spec(heckle/2 :: (matchspec(), any()) -> any()).
 heckle(MatchSpec, Actual) ->
   case application:get_env(hamcrest, heckle) of
     {ok, [M,F,A]} ->
