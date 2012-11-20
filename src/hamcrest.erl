@@ -33,6 +33,8 @@
 
 -include("hamcrest_internal.hrl").
 
+-export_type([matchspec/0]).
+
 -export([is_matcher/1,
          match/2,
          match/3,

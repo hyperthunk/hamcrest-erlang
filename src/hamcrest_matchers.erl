@@ -70,7 +70,7 @@
     check_isempty/1,
     check_member/2]).
 
--spec(will_fail/0 :: () -> matchspec()).
+-spec(will_fail/0 :: () -> hamcrest:matchspec()).
 will_fail() ->
     %% Matcher :: fun((fun(() -> any())) -> boolean())
     Matcher = fun(F) ->
@@ -84,7 +84,7 @@ will_fail() ->
         expected    = {oneof,{exit,error,exception}}
     }.
 
--spec(will_fail/2 :: (atom(), term()) -> matchspec()).
+-spec(will_fail/2 :: (atom(), term()) -> hamcrest:matchspec()).
 will_fail(Type, Reason) ->
     %% Matcher :: fun((fun(() -> any())) -> boolean())
     Matcher = fun(F) ->
@@ -98,11 +98,11 @@ will_fail(Type, Reason) ->
         expected    = {Type, Reason}
     }.
 
--spec(anything/0 :: () -> matchspec()).
+-spec(anything/0 :: () -> hamcrest:matchspec()).
 anything() ->
     ?MATCHER(fun(_) -> true end, any, anything).
 
--spec(foreach/1 :: (matchspec()) -> matchspec()).
+-spec(foreach/1 :: (hamcrest:matchspec()) -> hamcrest:matchspec()).
 foreach(M) when is_record(M, 'hamcrest.matchspec') ->
     ?MATCHER(fun(L) -> drop_matches(M, L) == [] end, M,
              {foreach, M#'hamcrest.matchspec'.desc}).
@@ -115,8 +115,8 @@ drop_matches(Match, []) ->
 drop_matches(Match, L) ->
     lists:dropwhile(fun(E) -> hamcrest:match(E, Match) end, L).
 
--spec(any_of/1 :: (list(matchfun(term()))) -> matchspec();
-                  (list(matchspec()))      -> matchspec()).
+-spec(any_of/1 :: (list(matchfun(term())))     -> hamcrest:matchspec();
+                  (list(hamcrest:matchspec())) -> hamcrest:matchspec()).
 any_of(Matchers) when is_list(Matchers) ->
     MatchFun =
     fun(M) when is_function(M) -> M;
@@ -131,8 +131,8 @@ any_of(Matchers) when is_list(Matchers) ->
 
 %% TODO: older syntax for type specifications - we need to support
 %% >= R13B for the most part...
--spec all_of(list(matchfun(term()))) -> matchspec();
-            (list(matchspec()))      -> matchspec().
+-spec all_of(list(matchfun(term())))     -> hamcrest:matchspec();
+            (list(hamcrest:matchspec())) -> hamcrest:matchspec().
 all_of(Matchers) when is_list(Matchers) ->
     MatchFun = fun(M) when is_function(M) -> M;
        (#'hamcrest.matchspec'{matcher=F}) -> F
@@ -144,7 +144,7 @@ all_of(Matchers) when is_list(Matchers) ->
         expected    = {all, Matchers}
     }.
 
--spec(equal_to/1 :: (term()) -> matchspec()).
+-spec(equal_to/1 :: (term()) -> hamcrest:matchspec()).
 equal_to(Y) ->
     #'hamcrest.matchspec'{
         matcher     = fun(X) -> X == Y end,
@@ -152,7 +152,7 @@ equal_to(Y) ->
         expected    = Y
     }.
 
--spec(exactly_equal_to/1 :: (term()) -> matchspec()).
+-spec(exactly_equal_to/1 :: (term()) -> hamcrest:matchspec()).
 exactly_equal_to(X) ->
     #'hamcrest.matchspec'{
         matcher     = fun(Y) -> X =:= Y end,
@@ -160,32 +160,32 @@ exactly_equal_to(X) ->
         expected    = X
     }.
 
--spec(is/1 :: (matchfun(term())) -> matchspec();
-              (matchspec())      -> matchspec();
-              (any())            -> matchspec()).
+-spec(is/1 :: (matchfun(term()))     -> hamcrest:matchspec();
+              (hamcrest:matchspec()) -> hamcrest:matchspec();
+              (any())                -> hamcrest:matchspec()).
 is(Matcher) when is_record(Matcher, 'hamcrest.matchspec') ->
     Matcher;
 is(Term) ->
     equal_to(Term).
 
--spec(is_true/0 :: () -> matchspec()).
+-spec(is_true/0 :: () -> hamcrest:matchspec()).
 is_true() ->
     equal_to(true).
 
--spec(is_false/0 :: () -> matchspec()).
+-spec(is_false/0 :: () -> hamcrest:matchspec()).
 is_false() ->
     is_not(equal_to(true)).
 
--spec(is_not/1 :: (matchfun(term())) -> matchspec();
-                  (matchspec())      -> matchspec();
-                  (term())           -> matchspec()).
+-spec(is_not/1 :: (matchfun(term()))     -> hamcrest:matchspec();
+                  (hamcrest:matchspec()) -> hamcrest:matchspec();
+                  (term())               -> hamcrest:matchspec()).
 is_not(#'hamcrest.matchspec'{ matcher=MatchFun }=MatchSpec)
     when is_record(MatchSpec, 'hamcrest.matchspec') ->
   MatchSpec#'hamcrest.matchspec'{ matcher = (fun(X) -> not(MatchFun(X)) end) };
 is_not(Term) ->
   is_not(equal_to(Term)).
 
--spec(greater_than/1 :: (number()) -> matchspec()).
+-spec(greater_than/1 :: (number()) -> hamcrest:matchspec()).
 greater_than(X) ->
     #'hamcrest.matchspec'{
         matcher     = fun(Y) -> Y > X end,
@@ -193,7 +193,7 @@ greater_than(X) ->
         expected    = X
     }.
 
--spec(greater_than_or_equal_to/1 :: (number()) -> matchspec()).
+-spec(greater_than_or_equal_to/1 :: (number()) -> hamcrest:matchspec()).
 greater_than_or_equal_to(X) ->
     #'hamcrest.matchspec'{
         matcher     = fun(Y) -> Y >= X end,
@@ -201,7 +201,7 @@ greater_than_or_equal_to(X) ->
         expected    = X
     }.
 
--spec(less_than/1 :: (number()) -> matchspec()).
+-spec(less_than/1 :: (number()) -> hamcrest:matchspec()).
 less_than(X) ->
     #'hamcrest.matchspec'{
         matcher     = fun(Y) -> Y < X end,
@@ -209,7 +209,7 @@ less_than(X) ->
         expected    = X
     }.
 
--spec(less_than_or_equal_to/1 :: (number()) -> matchspec()).
+-spec(less_than_or_equal_to/1 :: (number()) -> hamcrest:matchspec()).
 less_than_or_equal_to(X) ->
     #'hamcrest.matchspec'{
         matcher     = fun(Y) -> Y =< X end,
@@ -219,20 +219,20 @@ less_than_or_equal_to(X) ->
 
 %% fun((string()) -> boolean()) matchers...
 
--spec(contains_string/1 :: (string()) -> matchspec()).
+-spec(contains_string/1 :: (string()) -> hamcrest:matchspec()).
 contains_string([_|_]=X) ->
     ?MATCHER(fun(Y) -> string:str(Y, X) > 0 end, X, {contains_string, X}).
 
--spec(starts_with/1 :: (string()) -> matchspec()).
+-spec(starts_with/1 :: (string()) -> hamcrest:matchspec()).
 starts_with(X) ->
     ?MATCHER(fun(Y) -> string:str(Y, X) == 1 end, X, {starts_with, X}).
 
--spec(ends_with/1 :: (string()) -> matchspec()).
+-spec(ends_with/1 :: (string()) -> hamcrest:matchspec()).
 ends_with(X) ->
     ?MATCHER(fun(Y) -> string:equal(string:right(Y, length(X)), X) end,
              X, {ends_with, X}).
 
--spec(matches_regex/1 :: (string()) -> matchspec()).
+-spec(matches_regex/1 :: (string()) -> hamcrest:matchspec()).
 matches_regex(Rx) ->
     #'hamcrest.matchspec'{
                matcher     =
@@ -246,7 +246,7 @@ matches_regex(Rx) ->
                expected    = Rx
               }.
 
--spec(match_mfa/3 :: (module(), atom(), list(term())) -> matchspec()).
+-spec(match_mfa/3 :: (module(), atom(), list(term())) -> hamcrest:matchspec()).
 match_mfa(Mod, Func, Args) ->
     #'hamcrest.matchspec'{
         matcher     = fun(X) -> catch(apply(Mod, Func, Args ++ [X])) == true end,
@@ -255,13 +255,13 @@ match_mfa(Mod, Func, Args) ->
     }.
 
 -spec(match_mfa/4 :: (module(), atom(),
-                      list(term()), term()) -> matchspec()).
+                      list(term()), term()) -> hamcrest:matchspec()).
 match_mfa(Mod, Func, Args, Desc) ->
     MS = match_mfa(Mod, Func, Args),
     MS#'hamcrest.matchspec'{desc=Desc}.
 
 -spec(reverse_match_mfa/3 :: (module(), atom(),
-                              list(term())) -> matchspec()).
+                              list(term())) -> hamcrest:matchspec()).
 reverse_match_mfa(Mod, Func, Args) when is_list(Args) ->
     #'hamcrest.matchspec'{
         matcher     = fun(X) -> catch(apply(Mod, Func, [X|Args])) == true end,
@@ -270,17 +270,17 @@ reverse_match_mfa(Mod, Func, Args) when is_list(Args) ->
     }.
 
 -spec(reverse_match_mfa/4 :: (module(), atom(),
-                              list(term()), term()) -> matchspec()).
+                              list(term()), term()) -> hamcrest:matchspec()).
 reverse_match_mfa(Mod, Func, Args, Desc) ->
     MS = reverse_match_mfa(Mod, Func, Args),
     MS#'hamcrest.matchspec'{desc=Desc}.
 
--spec(isalive/0 :: () -> matchspec()).
+-spec(isalive/0 :: () -> hamcrest:matchspec()).
 isalive() ->
     MS = match_mfa(erlang, is_process_alive, []),
     MS#'hamcrest.matchspec'{desc=is_process_alive, expected=true}.
 
--spec(isdead/0 :: () -> matchspec()).
+-spec(isdead/0 :: () -> hamcrest:matchspec()).
 isdead() ->
     #'hamcrest.matchspec'{
         matcher     = fun(X) -> not erlang:is_process_alive(X) end,
@@ -288,17 +288,17 @@ isdead() ->
         expected    = false
     }.
 
--spec(has_length/1 :: (number()) -> matchspec()).
+-spec(has_length/1 :: (number()) -> hamcrest:matchspec()).
 has_length(Size) when is_number(Size) ->
   ?MATCHER(fun(XS) -> length(XS) == Size end,
            Size, {length, Size}).
 
--spec(has_same_contents_as/1 :: (container_t()) -> matchspec()).
+-spec(has_same_contents_as/1 :: (container_t()) -> hamcrest:matchspec()).
 has_same_contents_as(Container) when is_list(Container) ->
     MS = foreach(match_mfa(?MODULE, check_member, [Container])),
     MS#'hamcrest.matchspec'{desc=has_same_contents_as, expected=Container}.
 
--spec(contains_member/1 :: (term()) -> matchspec()).
+-spec(contains_member/1 :: (term()) -> hamcrest:matchspec()).
 contains_member(E) ->
     reverse_match_mfa(?MODULE, check_member, [E]).
 
@@ -326,7 +326,7 @@ check_member(Container, E) ->
             end
     end.
 
--spec(isempty/0 :: () -> matchspec()).
+-spec(isempty/0 :: () -> hamcrest:matchspec()).
 isempty() ->
     match_mfa(?MODULE, check_isempty, []).
 

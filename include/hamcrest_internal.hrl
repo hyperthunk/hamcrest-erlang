@@ -37,8 +37,6 @@
 
 -type(container_t() :: list() | set() | gb_set()).
 
--export_type([matchspec/0]).
-
 -define(MATCHER(MatchFun, Expected, Desc),
         #'hamcrest.matchspec'{
           matcher=MatchFun,
