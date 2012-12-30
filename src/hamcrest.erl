@@ -61,7 +61,7 @@ match(Value, MatchSpec) ->
 -spec(match/3 :: (term(), matchspec(),
                   fun(() -> any())) -> boolean()).
 match(Value, MatchSpec, RunAfter) ->
-  catch( assert_that(Value, MatchSpec, RunAfter) ) == true.
+  (catch assert_that(Value, MatchSpec, RunAfter)) == true.
 
 -spec(assert_that/3 :: (term(), matchspec(),
                         fun(() -> any())) -> 'true' | no_return()).
