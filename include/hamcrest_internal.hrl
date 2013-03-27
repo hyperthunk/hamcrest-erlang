@@ -32,11 +32,6 @@
     desc        =   ""         :: term()
 }).
 
--type(matchfun(A) :: fun((A) -> boolean())).
--opaque(matchspec() :: #'hamcrest.matchspec'{}).
-
--type(container_t() :: list() | set() | gb_set()).
-
 -define(MATCHER(MatchFun, Expected, Desc),
         #'hamcrest.matchspec'{
           matcher=MatchFun,
@@ -45,6 +40,6 @@
         }).
 
 -define(HECKLE(M,F,A),
-  .application:set_env(hamcrest, heckle, [M, F, A])).
+  application:set_env(hamcrest, heckle, [M, F, A])).
 
 -define(NOHECKLE, application:unset_env(hamcrest, heckle)).

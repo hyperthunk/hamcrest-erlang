@@ -37,7 +37,7 @@
     ((fun () ->
         case (hamcrest:assert_that(Value, MatchSpec)) of
             true -> true;
-            __V -> .erlang:error({assertion_failed,
+            __V -> erlang:error({assertion_failed,
                       [{module, ?MODULE},
                        {line, ?LINE},
                        {expected, true},
@@ -50,7 +50,7 @@
 fun() ->
     case (hamcrest:assert_that(Value, MatchSpec)) of
         true -> true;
-        __V -> .erlang:error({assertion_failed,
+        __V -> erlang:error({assertion_failed,
                   [{module, ?MODULE},
                    {line, ?LINE},
                    {expected, true},
@@ -63,7 +63,7 @@ end).
     ((fun () ->
         case (hamcrest:assert_that(Value, MatchSpec, After)) of
         true -> true;
-        __V -> .erlang:error({assertion_failed,
+        __V -> erlang:error({assertion_failed,
                       [{module, ?MODULE},
                        {line, ?LINE},
                        {expected, true},

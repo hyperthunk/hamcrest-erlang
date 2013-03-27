@@ -46,7 +46,7 @@
 -define(assertException(Class, Term, Expr),
 	((fun () ->
 	    try (Expr) of
-	        __V -> .erlang:error({assertException_failed,
+	        __V -> erlang:error({assertException_failed,
 				      [{module, ?MODULE},
 				       {line, ?LINE},
 				       {expression, (??Expr)},
@@ -57,7 +57,7 @@
 	    catch
 		Class:Term -> ok;
 	        __C:__T ->
-		    .erlang:error({assertException_failed,
+		    erlang:error({assertException_failed,
 				   [{module, ?MODULE},
 				    {line, ?LINE},
 				    {expression, (??Expr)},
@@ -66,7 +66,7 @@
 				     ++" , [...] }"},
 				    {unexpected_exception,
 				     {__C, __T,
-				      .erlang:get_stacktrace()}}]})
+				      erlang:get_stacktrace()}}]})
 	    end
 	  end)())).
 
