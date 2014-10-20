@@ -27,8 +27,8 @@
 %% -----------------------------------------------------------------------------
 
 -ifdef(namespaced_types).
-    -type hc_set()    :: dict:set().
-    -type hc_gb_set() :: dict:gb_set().
+    -type hc_set()    :: sets:set().
+    -type hc_gb_set() :: gb_sets:set().
 -else.
     -type hc_set()    :: set().
     -type hc_gb_set() :: gb_set().
