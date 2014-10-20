@@ -34,7 +34,7 @@ post_compile(_, AppFile) ->
     case lists:suffix("hamcrest.app", AppFile) of
         true ->
             code:add_patha(filename:join(rebar_utils:get_cwd(), "ebin")),
-            Exports = [ F || F <- hamcrest_matchers:module_info(exports), 
+            Exports = [ F || F <- hamcrest_matchers:module_info(exports),
                              F /= module_info ],
             rebar_log:log(debug, "Adding header exports/imports: ~p~n", [Exports]),
             Imports = [ io_lib:format("~s/~p", [F,A]) || {F, A} <- Exports ],
@@ -45,13 +45,20 @@ post_compile(_, AppFile) ->
             Path = filename:join(PWD, "priv/build/templates/hamcrest.hrl.src"),
             {ok, Bin} = file:read_file(Path),
             Res = rebar_templater:render(Bin, dict:from_list([{imports, ImportList}])),
+            ResBin = erlang:iolist_to_binary(Res),
             Dest = filename:absname(filename:join(["include", "hamcrest.hrl"])),
-            case file:write_file(Dest, list_to_binary(Res)) of
-                ok -> 
-                    rebar_log:log(info, "Header file(s) generated.~n", []),
+            case file:read_file(Dest) of
+                {ok, ResBin} ->
+                    rebar_log:log(info, "Header file(s) untouched.~n", []),
                     ok;
-                {error, WriteError} ->
-                    rebar_utils:abort("Failed to write ~p: ~p~n", [Dest, WriteError])
+                _ ->
+                    case file:write_file(Dest, ResBin) of
+                        ok ->
+                            rebar_log:log(info, "Header file(s) generated.~n", []),
+                            ok;
+                        {error, WriteError} ->
+                            rebar_utils:abort("Failed to write ~p: ~p~n", [Dest, WriteError])
+                    end
             end;
         false ->
             ok
