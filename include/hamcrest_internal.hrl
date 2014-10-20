@@ -26,6 +26,14 @@
 %% @copyright 2010 Tim Watson.
 %% -----------------------------------------------------------------------------
 
+-ifdef(namespaced_types).
+    -type hc_set()    :: dict:set().
+    -type hc_gb_set() :: dict:gb_set().
+-else.
+    -type hc_set()    :: set().
+    -type hc_gb_set() :: gb_set().
+-endif.
+
 -record('hamcrest.matchspec', {
     matcher     =   undefined  :: fun((term()) -> boolean()),
     expected    =   undefined  :: term(),
