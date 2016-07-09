@@ -4,6 +4,7 @@
 *.o
 *.so
 *.swp
+.rebar/
 build/*
 ^build$
 Emakefile
@@ -15,3 +16,10 @@ ebin/*.beam
 logs/*
 include/hamcrest.hrl
 qc.hrl
+deps/
+ct_*/
+all_runs.html
+ct_*
+jquery-latest.js
+jquery.tablesorter.min.js
+variables-ct@localhost

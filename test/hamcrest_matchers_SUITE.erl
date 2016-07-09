@@ -69,7 +69,7 @@ is_not_evaluates_to_logical_negation_of_underlying_matcher(_) ->
     ?EQC(P).
 
 is_not_provides_convenient_shortcut_for_not_equal_to(_) ->
-    P = ?FORALL({X, Y}, {binary(), binary()},
+    P = ?FORALL({X, _Y}, {binary(), binary()},
             begin
                 #'hamcrest.matchspec'{matcher=F1} = equal_to(X),
                 #'hamcrest.matchspec'{matcher=F2} = is_not(X),
@@ -240,7 +240,7 @@ ends_with_should_only_match_last_portion_of_string(_) ->
         ?IMPLIES(length(Xs) > 0,
         begin
           Y = round(length(Xs) / 2),
-          LStr = string:left(Xs, Y),
+          _LStr = string:left(Xs, Y),
           RStr = string:right(Xs, Y),
           case (assert_that(Xs, ends_with(RStr))) of
             true -> true;
