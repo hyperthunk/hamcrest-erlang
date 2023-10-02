@@ -56,7 +56,7 @@
 				       {unexpected_success, __V}]})
 	    catch
 		Class:Term -> ok;
-	        __C:__T ->
+	        __C:__T:StackTrace ->
 		    erlang:error({assertException_failed,
 				   [{module, ?MODULE},
 				    {line, ?LINE},
@@ -65,8 +65,7 @@
 				     "{ "++(??Class)++" , "++(??Term)
 				     ++" , [...] }"},
 				    {unexpected_exception,
-				     {__C, __T,
-				      erlang:get_stacktrace()}}]})
+				     {__C, __T, StackTrace}}]})
 	    end
 	  end)())).
 

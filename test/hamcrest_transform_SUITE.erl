@@ -45,8 +45,8 @@ test_failed_assert(_Config) ->
         true ->
             error_expected
     catch
-        error:{assertion_failed, _AssertionDetails} ->
-            [{?MODULE, _Function, _Arity, _FileLine} | _] = erlang:get_stacktrace(),
+        error:{assertion_failed, _AssertionDetails}:StackTrace ->
+            [{?MODULE, _Function, _Arity, _FileLine} | _] = StackTrace,
             true
     end,
     ok.
